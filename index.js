@@ -14,5 +14,6 @@ bot.on('message', function (user, userID, channelID, message, event) {
       to: channelID,
       message: 'pong'
     })
+    console.log('pong sent')
   }
 })
