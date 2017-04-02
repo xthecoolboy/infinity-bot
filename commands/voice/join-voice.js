@@ -1,5 +1,6 @@
 const Commando = require('discord.js-commando')
 const config = require('../../conf.json')
+const path = require('path')
 var cmdPrefix = config.commandPrefix
 
 module.exports = class JoinVoiceCommand extends Commando.Command {
@@ -10,24 +11,24 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
       group: 'voice',
       memberName: 'join-voice',
       description: 'Joins the voice channel the user is in',
-      examples: [cmdPrefix + 'jv', cmdPrefix + 'joinvoice', cmdPrefix + '-voice', cmdPrefix + 'join-voice'],
+      examples: [cmdPrefix + 'jv', cmdPrefix + 'joinvoice', cmdPrefix + 'voice', cmdPrefix + 'join-voice'],
       guildOnly: true
     })
   }
 
   async run (msg) {
-    console.log(msg)
-    const senderChannel = msg.member.voiceChannel
-    if (senderChannel !== undefined) {
-      const channel = msg.member.voiceChannel
-      channel.join().then(connection => {
-        console.log(msg.author.username + ' summoned bot to ' + msg.member.voiceChannel.name)
-        connection.playFile('../../music/Braken - To The Stars.mp3')
-        msg.channel.sendmsg('**I\'m now connected to: __' + msg.member.voiceChannel.name + '__**\nCurrently, all I can do is play Braken\'s To the Stars. You can make me leave by typing ' + config.prefix + 'lv')
-        .catch(console.error)
+    const userChannel = msg.member.voiceChannel
+    if (userChannel !== undefined) {
+      userChannel.join()
+      .then(connection => {
+        console.log(msg.author.username + ' has summoned bot to ' + userChannel.name)
+        msg.channel.sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nAll I can currently do is play To The Stars by Braken.')
+        const dispatcher = connection.playFile(path.join(__dirname, '/idlemusic/Braken - To The Stars.mp3')).on('debug', a => console.log('xxx debug', a))
+        dispatcher
       })
-    } else if (senderChannel === undefined) {
-      msg.channel.sendmsg(msg.member.user + ', you\'re not connected to a voice channel!')
+      .catch(console.error)
+    } else if (userChannel === undefined) {
+      msg.channel.sendMessage(msg.member.user + ', you\'re not connected to a voice channel!')
     }
   }
 }

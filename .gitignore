@@ -1,1 +1,3 @@
 conf.json
+*.sqlite3
+.DS_Store
