@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const config = require('./conf.json')
 const client = new Discord.Client()
-const voice = require('./voice/voiceRuntime.js')
 
 client.on('ready', () => {
   console.log(config.botName + ' ' + config.botVersion + ' ' + 'started')
@@ -13,8 +12,7 @@ client.on('message', message => {
     console.log('Sent Pong to ' + message.author.username)
   }
 })
-let voiceCapabilities = voice.voiceCapabilities
-/* client.on('message', message => {
+client.on('message', message => {
   if (message.content.toUpperCase() === config.prefix + 'JV') {
     const senderChannel = message.member.voiceChannel
     if (senderChannel !== undefined) {
@@ -25,8 +23,7 @@ let voiceCapabilities = voice.voiceCapabilities
         message.channel.sendMessage('**I\'m now connected to: __' + message.member.voiceChannel.name + '__**\nCurrently, all I can do is play Braken\'s To the Stars. You can make me leave by typing ' + config.prefix + 'lv')
       .catch(console.error)
       })
-    }
-    else if (senderChannel === undefined) {
+    } else if (senderChannel === undefined) {
       message.channel.sendMessage(message.member.user + ', you\'re not connected to a voice channel!')
     }
   }
@@ -39,14 +36,12 @@ client.on('message', message => {
       const channel = message.member.voiceChannel.connection
       channel.disconnect()
       console.log('Leaving voice...')
-    }
-    else if (senderChannel === undefined) {
+    } else if (senderChannel === undefined) {
       message.channel.sendMessage(message.member.user + ', you\'re not connected to a voice channel!')
-    }
-    else if (senderChannel !== botVoiceChannel) {
+    } else if (senderChannel !== botVoiceChannel) {
       message.channel.sendMessage(message.member.user + ', you\'re not in the same channel as me!')
     }
   }
 })
-*/
+
 client.login(config.token)
