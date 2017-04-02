@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const config = require('./conf.json')
 const client = new Discord.Client()
+const voice = require('./voice/voiceRuntime.js')
 
 client.on('ready', () => {
   console.log(config.botName + ' ' + config.botVersion + ' ' + 'started')
@@ -12,7 +13,8 @@ client.on('message', message => {
     console.log('Sent Pong to ' + message.author.username)
   }
 })
-client.on('message', message => {
+let voiceCapabilities = voice.voiceCapabilities
+/* client.on('message', message => {
   if (message.content.toUpperCase() === config.prefix + 'JV') {
     const senderChannel = message.member.voiceChannel
     if (senderChannel !== undefined) {
@@ -46,5 +48,5 @@ client.on('message', message => {
     }
   }
 })
-
+*/
 client.login(config.token)
