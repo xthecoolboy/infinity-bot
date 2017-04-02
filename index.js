@@ -33,17 +33,17 @@ client.on('message', message => {
     const senderChannel = message.member.voiceChannel
     if (client.voiceChannel !== undefined) {
       const botVoiceChannel = client.voiceConnections.first().channel
-    if (senderChannel !== undefined && senderChannel === botVoiceChannel) {
-      const channel = message.member.voiceChannel.connection
-      channel.disconnect()
-      console.log('Leaving voice...')
-    } else if (senderChannel === undefined) {
-      message.channel.sendMessage(message.member.user + ', you\'re not connected to a voice channel!')
-    } else if (senderChannel !== botVoiceChannel) {
-      message.channel.sendMessage(message.member.user + ', you\'re not in the same channel as me!')
+      if (senderChannel !== undefined && senderChannel === botVoiceChannel) {
+        const channel = message.member.voiceChannel.connection
+        channel.disconnect()
+        console.log('Leaving voice...')
+      } else if (senderChannel === undefined) {
+        message.channel.sendMessage(message.member.user + ', you\'re not connected to a voice channel!')
+      } else if (senderChannel !== botVoiceChannel) {
+        message.channel.sendMessage(message.member.user + ', you\'re not in the same channel as me!')
+      }
     }
   }
-}
 })
 
 client.login(config.token)
