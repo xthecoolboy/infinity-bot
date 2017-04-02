@@ -31,7 +31,8 @@ client.on('message', message => {
 client.on('message', message => {
   if (message.content.toUpperCase() === config.prefix + 'LV') {
     const senderChannel = message.member.voiceChannel
-    const botVoiceChannel = client.voiceConnections.first().channel
+    if (client.voiceChannel !== undefined) {
+      const botVoiceChannel = client.voiceConnections.first().channel
     if (senderChannel !== undefined && senderChannel === botVoiceChannel) {
       const channel = message.member.voiceChannel.connection
       channel.disconnect()
@@ -42,6 +43,7 @@ client.on('message', message => {
       message.channel.sendMessage(message.member.user + ', you\'re not in the same channel as me!')
     }
   }
+}
 })
 
 client.login(config.token)
