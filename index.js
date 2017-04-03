@@ -1,5 +1,4 @@
 const Commando = require('discord.js-commando')
-const sqlite = require('sqlite')
 const path = require('path')
 const config = require('./conf.json')
 const client = new Commando.Client({
@@ -18,16 +17,5 @@ client.registry
   ])
   .registerDefaults()
   .registerCommandsIn(path.join(__dirname, 'commands'))
-
-client.setProvider(
-  sqlite.open(path.join(__dirname, 'settings.sqlite3')).then(db => new Commando.SQLiteProvidor(db))
-).catch(console.error)
-
-client.on('message', message => {
-  if (message.content.toUpperCase() === config.prefix + 'PING') {
-    message.channel.sendMessage('Pong! ' + 'Time took: ' + Math.floor(Date.now() - message.createdTimestamp) + 'ms.')
-    console.log('Sent Pong to ' + message.author.username)
-  }
-})
 
 client.login(config.token)

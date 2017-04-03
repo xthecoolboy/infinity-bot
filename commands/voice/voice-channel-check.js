@@ -15,7 +15,9 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
       guildOnly: true
     })
   }
-
+  hasPermission (msg) {
+    return this.client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')
+  }
   async run (msg) {
     console.log(client.voiceConnections)
   }

@@ -18,17 +18,13 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
 
   async run (msg) {
     const userChannel = msg.member.voiceChannel
-    if (userChannel !== undefined) {
-      userChannel.join()
-      .then(connection => {
-        console.log(msg.author.username + ' has summoned bot to ' + userChannel.name)
-        msg.channel.sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nAll I can currently do is play To The Stars by Braken.')
-        const dispatcher = connection.playFile(path.join(__dirname, '/idlemusic/Braken - To The Stars.mp3')).on('debug', a => console.log('xxx debug', a))
-        dispatcher
+    if (userChannel) {
+      userChannel.join().then(connection => {
+        msg.channel.sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nAll I can do currently is play Hotel California')
+        connection.playFile(path.join(__dirname, 'idlemusic/') + 'Eagles - Hotel California.mp3')
       })
-      .catch(console.error)
-    } else if (userChannel === undefined) {
-      msg.channel.sendMessage(msg.member.user + ', you\'re not connected to a voice channel!')
+    } else if (!userChannel) {
+      msg.channel.sendMessage(msg.member.user + ', you\'re not in a voice channel!')
     }
   }
 }
