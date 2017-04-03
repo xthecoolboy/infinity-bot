@@ -17,7 +17,7 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
   }
 
   async run (msg) {
-    const userChannel = msg.member.voiceChannel
+    var userChannel = msg.member.voiceChannel
     if (userChannel) {
       userChannel.join().then(connection => {
         msg.channel.sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nAll I can do currently is play Hotel California')

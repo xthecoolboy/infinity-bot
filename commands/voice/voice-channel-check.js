@@ -1,9 +1,10 @@
 const Commando = require('discord.js-commando')
-const client = new Commando.Client()
+const init = require('../../init.js')
+const client = init.client
 const config = require('../../conf.json')
 var cmdPrefix = config.commandPrefix
 
-module.exports = class JoinVoiceCommand extends Commando.Command {
+module.exports = class CheckVoiceCommand extends Commando.Command {
   constructor (client) {
     super(client, {
       name: 'voice-channel-check',
@@ -19,6 +20,6 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
     return this.client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')
   }
   async run (msg) {
-    console.log(client.voiceConnections)
+    console.log(!client.voiceConnections.has(msg.channel.guild.id))
   }
 }

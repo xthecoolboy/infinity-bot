@@ -1,3 +1,5 @@
+'use strict'
+
 const Commando = require('discord.js-commando')
 const path = require('path')
 const config = require('./conf.json')
@@ -5,7 +7,7 @@ const client = new Commando.Client({
   owner: config.ownerID,
   commandPrefix: config.commandPrefix
 })
-
+exports.client = client
 client.on('ready', () => {
   console.log(config.botName + ' ' + config.botVersion + ' ' + 'started')
 })
