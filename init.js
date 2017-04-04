@@ -7,15 +7,16 @@ const client = new Commando.Client({
   owner: config.ownerID,
   commandPrefix: config.commandPrefix
 })
-exports.client = client
+this.client = client
 client.on('ready', () => {
-  console.log(config.botName + ' ' + config.botVersion + ' ' + 'started')
+  console.log('[INFO] ' + config.botName + ' ' + config.botVersion + ' ' + 'started')
 })
 
 client.registry
   .registerGroups([
     ['voice', 'Voice Commands'],
-    ['misc', 'Miscellanious Commands']
+    ['misc', 'Miscellanious Commands'],
+    ['util', 'Utility Commands']
   ])
   .registerDefaults()
   .registerCommandsIn(path.join(__dirname, 'commands'))
