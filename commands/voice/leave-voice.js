@@ -26,7 +26,7 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
       const botChannel = client.voiceConnections.first().channel
       if (userChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
         msg.channel.sendMessage('Leaving Voice Channel...')
-        console.log('Leaving channel ' + botChannel.name)
+        console.log('[INFO] Leaving channel: ' + botChannel.name)
         botChannel.connection.disconnect()
       } else if (!userChannel) {
         msg.channel.sendMessage(msg.member.user + ', you\'re not connected to a voice channel!')
