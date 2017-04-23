@@ -1,3 +1,5 @@
+'use strict'
+
 const Commando = require('discord.js-commando')
 const init = require('../../init.js')
 const config = require('../../conf.json')
