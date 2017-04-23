@@ -23,22 +23,28 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
   async run (msg) {
     const userChannel = msg.member.voiceChannel
     const userMention = msg.member.user
-    const botInVoice = client.voiceConnections.has(msg.channel.guild.id)
+    var botInVoice = client.voiceConnections.has(msg.channel.guild.id)
+
     function sendMessage (text) {
       msg.channel.sendMessage(text)
     }
+
     function initVoice (msg) {
       userChannel.join()
         .then(connection => {
           sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nHere are some soothing tunes.')
           const dispatcher = connection.playFile(path.join(__dirname, 'idlemusic/') + 'Jeopardy.mp3')
-          console.log('[INFO] ' + msg.member.user.username + '#' + msg.member.user.discriminator + ' has summoned bot to ' + userChannel.name)
+          console.log('[INFO] ' + userMention.username + '#' + userMention.discriminator + ' has summoned bot to ' + userChannel.name)
           dispatcher.once('end', () => {
-            sendMessage('Time run out... leaving voice')
-            client.voiceConnections.first().channel.connection.disconnect()
+            botInVoice = client.voiceConnections.has(msg.channel.guild.id)
+            if (botInVoice) {
+              sendMessage('Time ran out... leaving voice')
+              client.voiceConnections.first().channel.connection.disconnect()
+            }
           })
         })
     }
+
     function joinVoice (msg) {
       userChannel.join()
         .then(connection => {
@@ -49,6 +55,7 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
           console.log('[INFO] ' + userMention.username + ' has moved bot to ' + botChannel.name)
         })
     }
+
     if (!botInVoice) {
       if (!userChannel) {
         sendMessage(msg.member.user + ', you\'re not in a voice channel!')
