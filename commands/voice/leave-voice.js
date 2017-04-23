@@ -1,7 +1,7 @@
 const Commando = require('discord.js-commando')
 const init = require('../../init.js')
-const client = init.client
 const config = require('../../conf.json')
+const client = init.client
 var cmdPrefix = config.commandPrefix
 
 module.exports = class LeaveVoiceCommand extends Commando.Command {

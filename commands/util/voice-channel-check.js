@@ -11,7 +11,7 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
       aliases: ['bvc'],
       group: 'util',
       memberName: 'bot-voice-channel',
-      description: 'Checks the voice channel the bot is in',
+      description: 'Debugging...',
       examples: [cmdPrefix + 'bvc'],
       guildOnly: true
     })
@@ -19,7 +19,7 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
 
   async run (msg) {
     if (client.isOwner(msg.author)) {
-      console.log(client.voiceConnections.first().channel.members.size)
+      console.log(client.voiceConnections.first().player.dispatcher)
     }
   }
 }

@@ -2,41 +2,50 @@
 
 const Commando = require('discord.js-commando')
 const init = require('../../init.js')
+const client = init.client
 const config = require('../../conf.json')
 const path = require('path')
-const client = init.client
 var cmdPrefix = config.commandPrefix
 
-module.exports = class JoinVoiceCommand extends Commando.Client {
+module.exports = class JoinVoiceCommand extends Commando.Command {
   constructor (client) {
     super(client, {
       name: 'join-voice',
-      aliases: ['jv', 'voice', 'joinvoice'],
+      aliases: ['jv', 'joinvoice', 'voice'],
       group: 'voice',
       memberName: 'join-voice',
-      throttling: {
-        uses: 2,
-        duration: 3
-      },
       description: 'Joins the voice channel the user is in',
       examples: [cmdPrefix + 'jv', cmdPrefix + 'joinvoice', cmdPrefix + 'voice', cmdPrefix + 'join-voice'],
       guildOnly: true
     })
   }
+
   async run (msg) {
-    var senderChannel = msg.member.voiceChannel
-    var senderName = msg.member.user.username
-    var senderMention = msg.member.user
-    const dispatcher = null
-    if(!senderChannel){
-      msg.channel.sendMessage(senderMention + ', you\'re not connected to a channel!')
-    } else if (client.voiceConnections.has(msg.channel.guild.id)) {
-      // Find way to get dispatcher so that it can be used in another file
-    } else if (senderChannel.members.size < client.voiceConnections.first().members.size - 1) {
-      msg.channel.sendMessage(senderMention + ', your channel has less people than the one that I\'m currently in! \nAsk an Admin to move me!')
-    } else if (senderChannel.members.size >= client.voiceConnections.first().members.size - 1) {
-      // See other comment
+    var userChannel = msg.member.voiceChannel
+    function joinVoice (msg) {
+      userChannel.join()
+        .then(connection => {
+          msg.channel.sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nHere are some soothing tunes.')
+          const dispatcher = connection.playFile(path.join(__dirname, 'idlemusic/') + 'Jeopardy.mp3')
+          dispatcher.once('end', () => {
+            connection.playFile(path.join(__dirname, 'idlemusic/') + 'ambience.mp3')
+            dispatcher.once('end', () => {
+              msg.channel.sendMessage('Leaving Voice...')
+              client.voiceConnections.first().channel.connection.disconnect()
+            })
+          })
+          console.log('[INFO] ' + msg.member.user.username + '#' + msg.member.user.discriminator + ' has summoned bot to ' + userChannel.name)
+        })
     }
 
+    if (!userChannel) {
+      msg.channel.sendMessage(msg.member.user + ', you\'re not in a voice channel!')
+    } else if (!client.voiceConnections.has(msg.channel.guild.id) && userChannel) {
+      joinVoice(msg)
+    } else if (msg.member.voiceChannel.members.size < client.voiceConnections.first().channel.members.size - 1) {
+      msg.channel.sendMessage(msg.member.user + ', your channel has less people than the one I\'m currently in! Ask an admin to move me.')
+    } else if (msg.member.voiceChannel.members.size >= client.voiceConnections.first().channel.members.size - 1 && userChannel) {
+      joinVoice(msg)
+    }
   }
 }
