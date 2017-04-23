@@ -10,11 +10,11 @@ module.exports = class PauseVoiceCommand extends Commando.Command {
   constructor (client) {
     super(client, {
       name: 'pause-voice',
-      aliases: ['pause', 'pv'],
+      aliases: ['pause', 'pau'],
       group: 'voice',
       memberName: 'pause-voice',
-      description: 'Pauses voice connection',
-      examples: [cmdPrefix + 'pause-voice', cmdPrefix + 'pause', cmdPrefix + 'pv'],
+      description: 'Pauses current song',
+      examples: [cmdPrefix + 'pause-voice', cmdPrefix + 'pause', cmdPrefix + 'pau'],
       guildOnly: true
     })
   }
@@ -26,13 +26,14 @@ module.exports = class PauseVoiceCommand extends Commando.Command {
     var botChannel = client.voiceConnections.first().channel
     if (!botInChannel) {
       msg.channel.sendMessage(userMention + ', I\'m not in a voice channel\nStop picking on me :(')
-    } else if (!userChannel) {
-      msg.channel.sendMessage(userMention + ', you\'re not connected to a voice channel!')
+    } else if (dispatcher.paused) {
+      msg.channel.sendMessage(userMention + ', I\'m already paused, ya dingus!')
     } else if (userChannel === botChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
       dispatcher.pause()
+      msg.channel.sendMessage(userMention + ', Paused music')
       console.log('[INFO] ' + userMention.username + '#' + userMention.discriminator + ' has paused the current stream')
-    } else if (dispatcher.paused) {
-      msg.channel.sendMessage(userMention + ', I\'m already paused, ya dingus')
+    } else if (!userChannel) {
+      msg.channel.sendMessage(userMention + ', you\'re not connected to a voice channel!')
     }
   }
 }

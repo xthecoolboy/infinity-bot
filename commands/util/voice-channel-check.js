@@ -19,7 +19,7 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
 
   async run (msg) {
     if (client.isOwner(msg.author)) {
-      console.log(client.voiceConnections.first().player.dispatcher)
+      console.log(client.voiceConnections)
     }
   }
 }
