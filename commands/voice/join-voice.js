@@ -11,11 +11,20 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
   constructor (client) {
     super(client, {
       name: 'join-voice',
-      aliases: ['jv', 'joinvoice', 'voice'],
+      aliases: ['jv',
+        'joinvoice',
+        'voice'],
       group: 'voice',
       memberName: 'join-voice',
       description: 'Joins the voice channel the user is in',
-      examples: [cmdPrefix + 'jv', cmdPrefix + 'joinvoice', cmdPrefix + 'voice', cmdPrefix + 'join-voice'],
+      examples: [cmdPrefix + 'jv',
+        cmdPrefix + 'joinvoice',
+        cmdPrefix + 'voice',
+        cmdPrefix + 'join-voice'],
+      throttling: {
+        usages: 3,
+        duration: 30
+      },
       guildOnly: true
     })
   }
