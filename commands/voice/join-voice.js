@@ -52,6 +52,7 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
             }
           })
         })
+        .catch(console.error)
     }
 
     function joinVoice (msg) {
@@ -63,20 +64,32 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
           const botChannel = connection.channel
           console.log('[INFO] ' + userMention.username + ' has moved bot to ' + botChannel.name)
         })
+        .catch(console.error)
+    }
+
+    function delMsg (msg) {
+      msg.channel.fetchMessage(client.user.lastMessageID)
+        .then(message =>
+          message.delete(1800))
+        .catch(console.error)
+      msg.delete(1800)
     }
 
     if (!botInVoice) {
       if (!userChannel) {
-        sendMessage(msg.member.user + ', you\'re not in a voice channel!')
+        msg.reply('you\'re not in a voice channel!')
+        setTimeout(delMsg, 200, msg)
       } else if (!client.voiceConnections.has(msg.channel.guild.id) && userChannel) {
         initVoice(msg)
       }
     } else {
       const botChannel = client.voiceConnections.first().channel
       if (userChannel === botChannel) {
-        sendMessage(userMention + ', I\'m already connected to your voice channel, ya dingus!')
+        msg.reply('I\'m already connected to your voice channel, ya dingus!')
+        setTimeout(delMsg, 200, msg)
       } else if (userChannel.members.size < botChannel.members.size - 1) {
-        sendMessage(userMention + ', your channel has less people than the one I\'m currently in! Ask an admin to move me.')
+        msg.reply('your channel has less people than the one I\'m currently in! Ask an admin to move me.')
+        setTimeout(delMsg, 200, msg)
       } else if (userChannel.members.size >= botChannel.members.size - 1 && userChannel) {
         joinVoice(msg)
       }

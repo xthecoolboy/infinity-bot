@@ -24,16 +24,28 @@ module.exports = class PauseVoiceCommand extends Commando.Command {
     var userMention = msg.member.user
     var userChannel = msg.member.voiceChannel
     var botChannel = client.voiceConnections.first().channel
+
+    function delMsg (msg) {
+      msg.channel.fetchMessage(client.user.lastMessageID)
+      .then(message =>
+        message.delete(1800))
+        .catch(console.error)
+      msg.delete(1800)
+    }
+
     if (!botInChannel) {
-      msg.channel.sendMessage(userMention + ', I\'m not in a voice channel\nStop picking on me :(')
+      msg.reply(', I\'m not in a voice channel\nStop picking on me :(')
+      setTimeout(delMsg, 200, msg)
     } else if (dispatcher.paused) {
-      msg.channel.sendMessage(userMention + ', I\'m already paused, ya dingus!')
+      msg.reply(', I\'m already paused, ya dingus!')
+      setTimeout(delMsg, 200, msg)
     } else if (userChannel === botChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
       dispatcher.pause()
-      msg.channel.sendMessage(userMention + ', Paused music')
+      msg.channel.sendMessage('**__Music paused__**')
       console.log('[INFO] ' + userMention.username + '#' + userMention.discriminator + ' has paused the current stream')
     } else if (!userChannel) {
-      msg.channel.sendMessage(userMention + ', you\'re not connected to a voice channel!')
+      msg.reply(', you\'re not connected to a voice channel!')
+      setTimeout(delMsg, 200, msg)
     }
   }
 }

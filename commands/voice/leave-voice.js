@@ -19,8 +19,18 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
 
   async run (msg) {
     var botInChannel = client.voiceConnections.has(msg.channel.guild.id)
+
+    function delMsg (msg) {
+      msg.channel.fetchMessage(client.user.lastMessageID)
+        .then(message =>
+          message.delete(1800))
+        .catch(console.error)
+      msg.delete(1800)
+    }
+
     if (!botInChannel) {
-      msg.channel.sendMessage(msg.member.user + ', I\'m not connected to a voice channel!')
+      msg.reply(', I\'m not connected to a voice channel!')
+      setTimeout(delMsg, 200, msg)
     } else {
       const userChannel = msg.member.voiceChannel
       const botChannel = client.voiceConnections.first().channel
@@ -29,7 +39,8 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
         console.log('[INFO] Leaving channel: ' + botChannel.name)
         botChannel.connection.disconnect()
       } else if (!userChannel) {
-        msg.channel.sendMessage(msg.member.user + ', you\'re not connected to a voice channel!')
+        msg.reply(', you\'re not connected to a voice channel!')
+        setTimeout(delMsg, 200, msg)
       }
     }
   }
