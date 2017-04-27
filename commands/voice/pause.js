@@ -19,11 +19,9 @@ module.exports = class PauseVoiceCommand extends Commando.Command {
     })
   }
   async run (msg) {
-    const dispatcher = client.voiceConnections.first().player.dispatcher
     var botInChannel = client.voiceConnections.has(msg.channel.guild.id)
     var userMention = msg.member.user
     var userChannel = msg.member.voiceChannel
-    var botChannel = client.voiceConnections.first().channel
 
     function delMsg (msg) {
       msg.channel.fetchMessage(client.user.lastMessageID)
@@ -34,18 +32,22 @@ module.exports = class PauseVoiceCommand extends Commando.Command {
     }
 
     if (!botInChannel) {
-      msg.reply(', I\'m not in a voice channel\nStop picking on me :(')
+      msg.reply('I\'m not in a voice channel\nStop picking on me :(')
       setTimeout(delMsg, 200, msg)
-    } else if (dispatcher.paused) {
-      msg.reply(', I\'m already paused, ya dingus!')
-      setTimeout(delMsg, 200, msg)
-    } else if (userChannel === botChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
-      dispatcher.pause()
-      msg.channel.sendMessage('**__Music paused__**')
-      console.log('[INFO] ' + userMention.username + '#' + userMention.discriminator + ' has paused the current stream')
-    } else if (!userChannel) {
-      msg.reply(', you\'re not connected to a voice channel!')
-      setTimeout(delMsg, 200, msg)
+    } else {
+      const dispatcher = client.voiceConnections.first().player.dispatcher
+      var botChannel = client.voiceConnections.first().channel
+      if (dispatcher.paused) {
+        msg.reply('I\'m already paused, ya dingus!')
+        setTimeout(delMsg, 200, msg)
+      } else if (userChannel === botChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
+        dispatcher.pause()
+        msg.channel.sendMessage('**__Music paused__**')
+        console.log(`[INFO] ${userMention.username}#${userMention.discriminator} has paused the current stream`)
+      } else if (!userChannel) {
+        msg.reply('you\'re not connected to a voice channel!')
+        setTimeout(delMsg, 200, msg)
+      }
     }
   }
 }

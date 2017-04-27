@@ -29,17 +29,17 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
     }
 
     if (!botInChannel) {
-      msg.reply(', I\'m not connected to a voice channel!')
+      msg.reply('I\'m not connected to a voice channel!')
       setTimeout(delMsg, 200, msg)
     } else {
       const userChannel = msg.member.voiceChannel
       const botChannel = client.voiceConnections.first().channel
       if (userChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
         msg.channel.sendMessage('Leaving Voice Channel...')
-        console.log('[INFO] Leaving channel: ' + botChannel.name)
+        console.log(`[INFO] Leaving channel: ${botChannel.name}`)
         botChannel.connection.disconnect()
       } else if (!userChannel) {
-        msg.reply(', you\'re not connected to a voice channel!')
+        msg.reply('you\'re not connected to a voice channel!')
         setTimeout(delMsg, 200, msg)
       }
     }

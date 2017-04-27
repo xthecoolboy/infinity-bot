@@ -41,13 +41,15 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
     function initVoice (msg) {
       userChannel.join()
         .then(connection => {
-          sendMessage('**I\'m now connected to __' + userChannel.name + '__**\nHere are some soothing tunes.')
+          msg.channel.sendEmbed({ color: 3066993,
+            description: `**I'm now connected to __${userChannel.name}__**\nHere are some soothing tunes.`})
           const dispatcher = connection.playFile(path.join(__dirname, 'idlemusic/') + 'Jeopardy.mp3')
-          console.log('[INFO] ' + userMention.username + '#' + userMention.discriminator + ' has summoned bot to ' + userChannel.name)
+          console.log(`[INFO] ${userMention.username}#${userMention.discriminator} has summoned bot to ${userChannel.name}`)
           dispatcher.once('end', () => {
             botInVoice = client.voiceConnections.has(msg.channel.guild.id)
             if (botInVoice) {
-              sendMessage('Time ran out... leaving voice')
+              msg.channel.sendEmbed({ color: 15158332,
+                desctiption: 'Time ran out... leaving voice'})
               client.voiceConnections.first().channel.connection.disconnect()
             }
           })
@@ -59,10 +61,10 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
       userChannel.join()
         .then(connection => {
           const dispatcher = connection.player.dispatcher
-          sendMessage('**I\'ve been moved to __' + userChannel.name + '__**\nPausing current song...')
+          sendMessage(`**I've been moved to __${userChannel.name}__**\nPausing current song...`)
           dispatcher.pause()
           const botChannel = connection.channel
-          console.log('[INFO] ' + userMention.username + ' has moved bot to ' + botChannel.name)
+          console.log(`[INFO] ${userMention.username} has moved bot to ${botChannel.name}`)
         })
         .catch(console.error)
     }
@@ -84,7 +86,10 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
       }
     } else {
       const botChannel = client.voiceConnections.first().channel
-      if (userChannel === botChannel) {
+      if (!userChannel) {
+        msg.reply('you\'re not in a voice channel!')
+        setTimeout(delMsg, 200, msg)
+      } else if (userChannel === botChannel) {
         msg.reply('I\'m already connected to your voice channel, ya dingus!')
         setTimeout(delMsg, 200, msg)
       } else if (userChannel.members.size < botChannel.members.size - 1) {
