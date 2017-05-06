@@ -37,5 +37,5 @@ client.setProvider(
 client.login(config.token)
 
 process.on('unhandledRejection', err => {
-  console.error('[ERR] Uncaught Promise Error: \n' + err.stack)
+  console.error('[ERROR] Uncaught Promise: \n' + err.stack)
 })

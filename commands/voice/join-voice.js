@@ -11,57 +11,57 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
   constructor (client) {
     super(client, {
       name: 'join-voice',
+
       aliases: ['jv',
         'joinvoice',
         'voice'],
+
       group: 'voice',
       memberName: 'join-voice',
       description: 'Joins the voice channel the user is in',
+      guildOnly: true,
+
       examples: [cmdPrefix + 'jv',
         cmdPrefix + 'joinvoice',
         cmdPrefix + 'voice',
         cmdPrefix + 'join-voice'],
+
       throttling: {
         usages: 3,
         duration: 30
-      },
-      guildOnly: true
+      }
+
     })
   }
 
   async run (msg) {
     const userChannel = msg.member.voiceChannel
     const userMention = msg.member.user
+    var manualLeave = this.manualLeave
     var botInVoice = client.voiceConnections.has(msg.channel.guild.id)
-
-    function sendMessage (text) {
-      msg.channel.sendMessage(text)
-    }
+    var inVoice = false
 
     function initVoice (msg) {
+      inVoice = true
       userChannel.join()
         .then(connection => {
-          msg.channel.sendEmbed({ color: 3066993,
-            description: `**I'm now connected to __${userChannel.name}__**\nHere are some soothing tunes.`})
-          const dispatcher = connection.playFile(path.join(__dirname, 'idlemusic/') + 'Jeopardy.mp3')
+          msg.channel.send({embed: {
+            color: 3066993,
+            description: `**I'm now connected to __${userChannel.name}__**
+              Here are some soothing tunes.`}})
+          connection.playFile(path.join(__dirname, 'idlemusic/') + 'goat.mp3')
           console.log(`[INFO] ${userMention.username}#${userMention.discriminator} has summoned bot to ${userChannel.name}`)
-          dispatcher.once('end', () => {
-            botInVoice = client.voiceConnections.has(msg.channel.guild.id)
-            if (botInVoice) {
-              msg.channel.sendEmbed({ color: 15158332,
-                desctiption: 'Time ran out... leaving voice'})
-              client.voiceConnections.first().channel.connection.disconnect()
-            }
-          })
         })
         .catch(console.error)
     }
 
     function joinVoice (msg) {
+      inVoice = true
       userChannel.join()
         .then(connection => {
           const dispatcher = connection.player.dispatcher
-          sendMessage(`**I've been moved to __${userChannel.name}__**\nPausing current song...`)
+          msg.channel.send(`**I've been moved to __${userChannel.name}__**
+            Pausing current song...`)
           dispatcher.pause()
           const botChannel = connection.channel
           console.log(`[INFO] ${userMention.username} has moved bot to ${botChannel.name}`)
@@ -99,5 +99,22 @@ module.exports = class JoinVoiceCommand extends Commando.Command {
         joinVoice(msg)
       }
     }
+    if (inVoice) {
+      const voiceConnection = await client.voiceConnections.first().player.dispatchter
+      console.log(voiceConnection)
+      voiceConnection.once('end', () => {
+        client.voiceConnections.first().channel.leave()
+        inVoice = false
+        if (!manualLeave) {
+          msg.channel.send({embed: { color: 15158332,
+            description: 'Time ran out... leaving voice'}})
+        }
+      })
+    }
+  }
+  get manualLeave () {
+    if (!this._manualLeave) this._manualLeave = this.client.registry.resolveCommand('voice:leave-voice').manualLeave
+
+    return this._manualLeave
   }
 }

@@ -19,7 +19,8 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
 
   async run (msg) {
     if (client.isOwner(msg.author)) {
-      console.log(client.voiceConnections.has(msg.channel.guild.id))
+      console.log(msg.guild.channels.find('type', 'voice'))
+      console.log(client.voiceConnections.first().dispatcher)
     }
   }
 }

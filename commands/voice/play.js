@@ -19,7 +19,7 @@ module.exports = class ResumeVoiceCommand extends Commando.Command {
     })
   }
   async run (msg) {
-    var botInChannel = client.voiceConnections.has(msg.channel.guild.id)
+    var botInVoice = client.voiceConnections.has(msg.channel.guild.id)
     var userMention = msg.member.user
     var userChannel = msg.member.voiceChannel
 
@@ -31,7 +31,7 @@ module.exports = class ResumeVoiceCommand extends Commando.Command {
       msg.delete(1800)
     }
 
-    if (!botInChannel) {
+    if (!botInVoice) {
       msg.reply('I\'m not connected to a channel!')
       setTimeout(delMsg, 200, msg)
     } else {

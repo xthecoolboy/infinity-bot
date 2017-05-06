@@ -18,7 +18,7 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
   }
 
   async run (msg) {
-    var botInChannel = client.voiceConnections.has(msg.channel.guild.id)
+    const queue = this.queue.get(msg.guild.id)
 
     function delMsg (msg) {
       msg.channel.fetchMessage(client.user.lastMessageID)
@@ -28,20 +28,20 @@ module.exports = class LeaveVoiceCommand extends Commando.Command {
       msg.delete(1800)
     }
 
-    if (!botInChannel) {
+    if (!queue.voiceChannel) {
       msg.reply('I\'m not connected to a voice channel!')
       setTimeout(delMsg, 200, msg)
     } else {
-      const userChannel = msg.member.voiceChannel
-      const botChannel = client.voiceConnections.first().channel
-      if (userChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
-        msg.channel.sendMessage('Leaving Voice Channel...')
-        console.log(`[INFO] Leaving channel: ${botChannel.name}`)
-        botChannel.connection.disconnect()
-      } else if (!userChannel) {
-        msg.reply('you\'re not connected to a voice channel!')
-        setTimeout(delMsg, 200, msg)
-      }
+      const song = queue.songs[0]
+      queue.songs = []
+      console.log(`[INFO] Leaving channel: ${queue.voiceChannel.name}`)
+      if (song.dispatcher) song.dispatcher.end()
+      return msg.channel.send(`Y'all can blame ${msg.author} for stopping the music...`)
     }
+  }
+  get queue () {
+    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:request').queue
+
+    return this._queue
   }
 }
