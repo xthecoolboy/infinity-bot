@@ -1,53 +1,50 @@
 'use strict'
 
 const Commando = require('discord.js-commando')
-const init = require('../../init.js')
-const config = require('../../conf.json')
-const client = init.client
-var cmdPrefix = config.commandPrefix
 
-module.exports = class PauseVoiceCommand extends Commando.Command {
+module.exports = class PauseCommand extends Commando.Command {
   constructor (client) {
     super(client, {
-      name: 'pause-voice',
-      aliases: ['pause', 'pau'],
+      name: 'pause',
+      aliases: ['pause-voice', 'pau'],
       group: 'voice',
-      memberName: 'pause-voice',
+      memberName: 'pause',
       description: 'Pauses current song',
-      examples: [cmdPrefix + 'pause-voice', cmdPrefix + 'pause', cmdPrefix + 'pau'],
+      examples: ['pause-voice', 'pause', 'pau'],
       guildOnly: true
     })
   }
   async run (msg) {
-    var botInVoice = client.voiceConnections.has(msg.channel.guild.id)
-    var userMention = msg.member.user
+    const queue = this.queue.get(msg.guild.id)
     var userChannel = msg.member.voiceChannel
-
-    function delMsg (msg) {
-      msg.channel.fetchMessage(client.user.lastMessageID)
-      .then(message =>
-        message.delete(1800))
-        .catch(console.error)
-      msg.delete(1800)
-    }
-
-    if (!botInVoice) {
-      msg.reply('I\'m not in a voice channel\nStop picking on me :(')
-      setTimeout(delMsg, 200, msg)
+    let response
+    if (!queue) {
+      response = await msg.reply('I\'m not in a voice channel! Stop picking on me :(')
+      this.delMsg(msg, response)
     } else {
-      const dispatcher = client.voiceConnections.first().player.dispatcher
-      var botChannel = client.voiceConnections.first().channel
-      if (dispatcher.paused) {
-        msg.reply('I\'m already paused, ya dingus!')
-        setTimeout(delMsg, 200, msg)
-      } else if (userChannel === botChannel || client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')) {
-        dispatcher.pause()
-        msg.channel.sendMessage('**__Music paused__**')
-        console.log(`[INFO] ${userMention.username}#${userMention.discriminator} has paused the current stream`)
+      const song = queue.songs[0]
+      if (!song.playing) {
+        response = msg.reply('I\'m already paused, ya dingus!')
+        this.delMsg(msg, response)
+      } else if (userChannel === queue.voiceChannel || this.client.isOwner(msg.author) || msg.member.permissions.has('ADMINISTRATOR')) {
+        song.dispatcher.pause()
+        song.playing = false
+        msg.channel.send('**Music paused**')
+        console.log(`[INFO] ${msg.author.tag} has paused the current stream`)
       } else if (!userChannel) {
-        msg.reply('you\'re not connected to a voice channel!')
-        setTimeout(delMsg, 200, msg)
+        response = msg.reply('you\'re not connected to a voice channel!')
+        this.delMsg(msg, response)
+      } else if (userChannel !== queue.voiceChannel) {
+        msg.reply(`you're not in my voice channel. Join it before pausing.`)
       }
     }
+  }
+  delMsg (msg, response) {
+    response.delete(2000)
+    msg.delete(2000)
+  }
+  get queue () {
+    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
+    return this._queue
   }
 }

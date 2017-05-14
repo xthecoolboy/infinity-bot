@@ -3,19 +3,16 @@ const ytdl = require('ytdl-core')
 const YouTube = require('simple-youtube-api')
 const Song = require('../../struct/Song.js')
 
-const init = require('../../init.js')
-const client = init.client
-
 const config = require('../../conf.json')
 
-module.exports = class RequestCommand extends Commando.Command {
+module.exports = class AddQueueCommand extends Commando.Command {
   constructor (client) {
     super(client, {
-      name: 'request',
+      name: 'add',
       group: 'voice',
-      memberName: 'request',
+      memberName: 'add',
       aliases: ['req',
-        'add',
+        'request',
         'rq'],
       description: 'Adds song to the queue, or plays instantly if no queue.',
       guildOnly: true,
@@ -38,14 +35,14 @@ module.exports = class RequestCommand extends Commando.Command {
     const userInput = args.userInput
     const queue = this.queue.get(msg.guild.id)
 
-    let voiceChannel
+    var voiceChannel
     if (!queue) {
       voiceChannel = msg.member.voiceChannel
       if (!voiceChannel) {
         return msg.reply('join a voice channel first, ya dingus!')
       }
-      const botPerms = voiceChannel.permissionsFor(client.user)
-      if (!botPerms.hasPermission('CONNECT')) {
+      const botPerms = await voiceChannel.permissionsFor(this.client.user)
+      if (!botPerms.has('CONNECT')) {
         return msg.channel.send({embed: {
           color: 15158332,
           fields: [{
@@ -54,42 +51,42 @@ module.exports = class RequestCommand extends Commando.Command {
           }]
         }})
       }
-      if (!botPerms.hasPermission('SPEAK')) {
-        return msg.channel.send({
+      if (!botPerms.has('SPEAK')) {
+        return msg.channel.send({embed: {
           color: 15158332,
           fields: [{
             name: `Whoops...`,
             value: `I can't speak in your channel... Ask an Admin for help.`
           }]
-        })
+        }})
       }
     } else if (queue.voiceChannel.members.size - 1 >= msg.member.voiceChannel.members.size) {
-      return msg.channel.sendEmbed({
+      return msg.channel.send({embed: {
         color: 15105570,
         fields: [{
           name: `Whoops...`,
           value: `Your channel has less people than the one I'm in... Ask an Admin to move me!`
         }]
-      })
+      }})
     } else if (queue.voiceChannel.members.size - 1 < msg.member.voiceChannel.members.size) {
-      const botPerms = voiceChannel.permissionsFor(client.user)
-      if (!botPerms.hasPermission('CONNECT')) {
-        return msg.channel.sendEmbed({
+      const botPerms = await voiceChannel.permissionsFor(this.client.user)
+      if (!botPerms.has('CONNECT')) {
+        return msg.channel.send({embed: {
           color: 15158332,
           fields: [{
             name: `Whoops...`,
             value: `I can't connect to your channel... Ask an Admin for help.`
           }]
-        })
+        }})
       }
-      if (!botPerms.hasPermission('SPEAK')) {
-        return msg.channel.sendEmbed({
+      if (!botPerms.has('SPEAK')) {
+        return msg.channel.send({embed: {
           color: 15158332,
           fields: [{
             name: `Whoops...`,
             value: `I can't speak in your channel... Ask an Admin for help.`
           }]
-        })
+        }})
       }
     }
 
@@ -168,10 +165,12 @@ module.exports = class RequestCommand extends Commando.Command {
     const queue = this.queue.get(guild.id)
 
     if (!song) {
-      queue.textChannel.send({embed: {
-        color: 15844367,
-        description: `No more songs in queue, leaving voice!`
-      }})
+      if (queue.textChannel) {
+        queue.textChannel.send({embed: {
+          color: 15844367,
+          description: `No more songs in queue, leaving voice!`
+        }})
+      }
       queue.voiceChannel.leave()
       this.queue.delete(guild.id)
       return
@@ -179,7 +178,8 @@ module.exports = class RequestCommand extends Commando.Command {
     queue.textChannel.send({embed: {
       color: 3447003,
       title: `Now playing: __${song.title}__`,
-      description: `**Length:** ` + song.songLength,
+      description: `**Requested By:** ${song.username}
+        Length: ${song.songLength}`,
       image: {url: song.thumbnail}}
     })
     let stream = ytdl(song.url, {audioonly: true})
