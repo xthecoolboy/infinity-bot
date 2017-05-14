@@ -35,7 +35,8 @@ module.exports = class AddQueueCommand extends Commando.Command {
     const userInput = args.userInput
     const queue = this.queue.get(msg.guild.id)
 
-    var voiceChannel
+    let voiceChannel
+    let response
     if (!queue) {
       voiceChannel = msg.member.voiceChannel
       if (!voiceChannel) {
@@ -60,39 +61,22 @@ module.exports = class AddQueueCommand extends Commando.Command {
           }]
         }})
       }
-    } else if (queue.voiceChannel.members.size - 1 >= msg.member.voiceChannel.members.size) {
-      return msg.channel.send({embed: {
-        color: 15105570,
-        fields: [{
-          name: `Whoops...`,
-          value: `Your channel has less people than the one I'm in... Ask an Admin to move me!`
-        }]
+    } else if (voiceChannel !== queue.voiceChannel && !msg.member.permissions.has('MANAGE_ROLES')) {
+      const prefix = this.client.provider.get(msg.guild.id, 'prefix')
+      response = await msg.channel.send({embed: {
+        color: 10038562,
+        title: `Error joining channel...`,
+        description: `You're not in my channel. Either join my channel, or move me using ${prefix}mv.
+          Type \`${prefix}help move\` for more info.`
       }})
-    } else if (queue.voiceChannel.members.size - 1 < msg.member.voiceChannel.members.size) {
-      const botPerms = await voiceChannel.permissionsFor(this.client.user)
-      if (!botPerms.has('CONNECT')) {
-        return msg.channel.send({embed: {
-          color: 15158332,
-          fields: [{
-            name: `Whoops...`,
-            value: `I can't connect to your channel... Ask an Admin for help.`
-          }]
-        }})
-      }
-      if (!botPerms.has('SPEAK')) {
-        return msg.channel.send({embed: {
-          color: 15158332,
-          fields: [{
-            name: `Whoops...`,
-            value: `I can't speak in your channel... Ask an Admin for help.`
-          }]
-        }})
-      }
+      response.delete(5000)
+      msg.delete(5000)
+      return
     }
 
     const status = await msg.reply('getting video details, one moment...')
-    if (userInput.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist=(.*)$/)) {
-      const playlist = this.youtube.getPlaylist(userInput)
+    if (userInput.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
+      const playlist = await this.youtube.getPlaylist(userInput)
       return this.handlePlaylist(msg, status, queue, playlist, voiceChannel)
     } else {
       try {
@@ -112,7 +96,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
   }
   async handleVideo (msg, status, queue, video, voiceChannel) {
     if (video.durationSeconds === 0) {
-      status.edit(`Livestreams aren't supported, apologies!`)
+      status.edit(`${msg.author}, livestreams aren't supported, apologies!`)
       return null
     }
     if (!queue) {
@@ -124,7 +108,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
       }
       this.queue.set(msg.guild.id, queue)
 
-      const result = await this.addSong(video, msg)
+      const result = await this.addSong(video, msg, false, null)
       const resultMsg = {color: 3426654,
         description: `**Joining your voice channel:** ${queue.voiceChannel.name}
         ${result}`}
@@ -154,6 +138,54 @@ module.exports = class AddQueueCommand extends Commando.Command {
       return null
     }
   }
+  async handlePlaylist (msg, status, queue, playlist, voiceChannel) {
+    const videos = await playlist.getVideos()
+    for (const video of Object.values(videos)) {
+      const video2 = await this.youtube.getVideoByID(video.id)
+      if (video2.durationSeconds === 0) {
+        status.edit(`${msg.author}, livestreams aren't supported, apologies!`)
+        return null
+      }
+      if (!queue) {
+        queue = {
+          voiceChannel: voiceChannel,
+          textChannel: msg.channel,
+          connection: null,
+          songs: []
+        }
+        this.queue.set(msg.guild.id, queue)
+        await this.addSong(video2, msg)
+        status.edit('trying to join your voice channel, hang on.')
+
+        try {
+          const connection = await queue.voiceChannel.join()
+          queue.connection = connection
+          this.play(msg.guild, queue.songs[0])
+          status.delete()
+        } catch (error) {
+          msg.channel.send({embed: {color: 15158332,
+            description: `**Something went wrong when joining the channel**
+            Send this to an Admin: ${error}`}})
+          console.error(`[ERROR] ${error}`)
+        }
+      } else {
+        await this.addSong(video2, msg)
+      }
+    }
+    const prefix = this.client.provider.get(msg.guild.id, 'prefix')
+
+    queue.textChannel.send({ embed: {
+      color: 15844367,
+      title: `Added Playlist to Queue!`,
+      description: `${msg.author} has queued up __${playlist.title}__ by **${playlist.channel.title}**!
+      **${Object.entries(videos).length}** videos have been added to the queue.
+      
+      Use \`${prefix}queue\` to see all videos in the queue.`
+    }})
+
+    return null
+  }
+
   addSong (video, msg) {
     const queue = this.queue.get(msg.guild.id)
     const song = new Song(video, msg.member)

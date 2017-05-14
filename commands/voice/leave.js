@@ -22,16 +22,16 @@ module.exports = class LeaveCommand extends Commando.Command {
       msg.delete(2000)
     } else {
       console.log(`[INFO] Leaving channel: ${queue.voiceChannel.name}`)
-      queue.textChannel = undefined
-      if (queue.voiceChannel) {
-        queue.voiceChannel.leave()
-        this.queue.delete(msg.guild.id)
-      }
-      return msg.channel.send({embed: {
+      queue.textChannel.send({embed: {
         color: 15158332,
         description: `**${msg.author} made me leave... I'm sowwy**`,
         image: {url: `https://media1.giphy.com/media/oAW9QPkQwJqJq/giphy.gif`}
       }})
+      queue.textChannel = undefined
+      queue.songs = []
+      queue.voiceChannel.leave()
+      this.queue.delete(msg.guild.id)
+      return
     }
   }
 

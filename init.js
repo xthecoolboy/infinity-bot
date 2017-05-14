@@ -24,9 +24,6 @@ client.on('unknownCommand', message => {
 
     Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
 })
-client.on('debug', info => {
-  console.log(`[DEBUG] ${info}`)
-})
 
 sqlite.open(path.join(__dirname, 'settings.sqlite3')).then((db) => {
   client.setProvider(new Commando.SQLiteProvider(db))
@@ -41,9 +38,8 @@ client.registry
   .registerDefaults()
   .registerCommandsIn(path.join(__dirname, 'commands'))
 
-console.log(client.settings)
 client.login(config.token)
 
-process.on('unhandledRejection', err => {
+/* process.on('unhandledRejection', err => {
   console.error('[ERROR] Uncaught Promise: \n' + err.stack)
-})
+}) */
