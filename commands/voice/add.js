@@ -140,6 +140,16 @@ module.exports = class AddQueueCommand extends Commando.Command {
   }
   async handlePlaylist (msg, status, queue, playlist, voiceChannel) {
     const videos = await playlist.getVideos()
+    const prefix = this.client.provider.get(msg.guild.id, 'prefix')
+    msg.channel.send({ embed: {
+      color: 15844367,
+      title: `Added Playlist to Queue!`,
+      description: `${msg.author} has queued up __${playlist.title}__ by **${playlist.channel.title}**!
+        **${Object.entries(videos).length}** videos will be added to the queue.
+
+        Use \`${prefix}queue\` to see all videos in the queue.`
+    }})
+
     for (const video of Object.values(videos)) {
       const video2 = await this.youtube.getVideoByID(video.id)
       if (video2.durationSeconds === 0) {
@@ -172,17 +182,10 @@ module.exports = class AddQueueCommand extends Commando.Command {
         await this.addSong(video2, msg)
       }
     }
-    const prefix = this.client.provider.get(msg.guild.id, 'prefix')
-
-    queue.textChannel.send({ embed: {
-      color: 15844367,
-      title: `Added Playlist to Queue!`,
-      description: `${msg.author} has queued up __${playlist.title}__ by **${playlist.channel.title}**!
-      **${Object.entries(videos).length}** videos have been added to the queue.
-      
-      Use \`${prefix}queue\` to see all videos in the queue.`
-    }})
-
+    queue.textChannel.send(`Playlist has been added to the queue!`)
+    .then(response => {
+      response.delete(2500)
+    })
     return null
   }
 

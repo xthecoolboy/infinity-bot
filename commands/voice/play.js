@@ -19,29 +19,39 @@ module.exports = class ResumeCommand extends Commando.Command {
     var userChannel = msg.member.voiceChannel
     let response
     if (!queue) {
-      response = await msg.reply('I\'m not connected to a channel!')
+      msg.reply('I\'m not connected to a channel!')
+      .then(response => {
+        response.delete(2000)
+        msg.delete(2000)
+      })
       this.delMsg(msg, response)
     } else {
       const song = queue.songs[0]
       if (song.playing) {
-        response = await msg.reply('I\'m not paused right now, ya dingus!')
-        this.delMsg(msg, response)
+        msg.reply('I\'m not paused right now, ya dingus!')
+        .then(response => {
+          response.delete(2000)
+          msg.delete(2000)
+        })
       } else if (userChannel === queue.voiceChannel || this.client.isOwner(msg.author) || msg.member.permissions.has('ADMINISTRATOR')) {
         song.dispatcher.resume()
         song.playing = true
         msg.channel.send('**Music Resumed**')
         console.log(`[INFO] ${msg.author.tag} has resumed the current stream`)
       } else if (!userChannel) {
-        response = await msg.reply('you\'re not in a voice channel!')
-        this.delMsg(msg, response)
+        msg.reply('you\'re not in a voice channel!')
+        .then(response => {
+          response.delete(2000)
+          msg.delete(2000)
+        })
       } else if (userChannel !== queue.voiceChannel) {
-        response = await msg.reply(`you're not in my voice channel. Join it before resuming.`)
+        msg.reply(`you're not in my voice channel. Join it before resuming.`)
+        .then(response => {
+          response.delete(2000)
+          msg.delete(2000)
+        })
       }
     }
-  }
-  delMsg (msg, response) {
-    response.delete(2000)
-    msg.delete(2000)
   }
   get queue () {
     if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue

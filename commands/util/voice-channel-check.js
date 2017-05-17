@@ -1,8 +1,4 @@
 const Commando = require('discord.js-commando')
-const init = require('../../init.js')
-const client = init.client
-const config = require('../../conf.json')
-var cmdPrefix = config.commandPrefix
 
 module.exports = class CheckVoiceCommand extends Commando.Command {
   constructor (client) {
@@ -12,15 +8,19 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
       group: 'util',
       memberName: 'bot-voice-channel',
       description: 'Debugging...',
-      examples: [cmdPrefix + 'bvc'],
+      examples: ['bvc'],
       guildOnly: true
     })
   }
 
   async run (msg) {
-    if (client.isOwner(msg.author)) {
-      console.log(msg.guild.channels.find('type', 'voice'))
-      console.log(client.voiceConnections.first().dispatcher)
+    const queue = this.queue.get(msg.guild.id)
+    if (this.client.isOwner(msg.author)) {
+      console.log(queue.songs.length)
     }
+  }
+  get queue () {
+    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
+    return this._queue
   }
 }
