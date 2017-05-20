@@ -1,4 +1,5 @@
 const Commando = require('discord.js-commando')
+const {stripIndents} = require('common-tags')
 
 module.exports = class ViewQueueCommand extends Commando.Command {
   constructor (client) {
@@ -15,7 +16,7 @@ module.exports = class ViewQueueCommand extends Commando.Command {
       guildOnly: true
     })
   }
-  async run (msg) {
+  async run (msg, args) {
     const queue = this.queue.get(msg.guild.id)
     const prefix = this.client.provider.get(msg.guild.id, 'prefix')
     if (!queue) {
@@ -30,16 +31,18 @@ module.exports = class ViewQueueCommand extends Commando.Command {
       if (queue.songs[0].title.length > 59) {
         currentSongTitle = queue.songs[0].title.slice(0, 58)
       }
-      queueList.push(`**Now Playing: __${queue.songs[0].title.length > 59 ? `${currentSongTitle}...` : queue.songs[0].title}__**
-        Requested by: ${queue.songs[0].username}\n
-        Up Next...`)
+      queueList.push(stripIndents`**Now Playing: __${queue.songs[0].title.length > 59 ? `${currentSongTitle}...` : queue.songs[0].title}__**
+        Requested by: ${queue.songs[0].username}\n`)
+      if (queue.songs[1]) {
+        queueList.push(`Up next...`)
+      }
 
       for (var queuePos = 1; queuePos < queue.songs.length; queuePos++) {
         var songTitle
         if (queue.songs[queuePos].title.length > 69) {
           songTitle = queue.songs[queuePos].title.slice(0, 68)
         }
-        queueList.push(`  **${queuePos}: __${queue.songs[queuePos].title.length > 69 ? `${songTitle}...` : queue.songs[queuePos].title}__**
+        queueList.push(stripIndents`**${queuePos}: __${queue.songs[queuePos].title.length > 69 ? `${songTitle}...` : queue.songs[queuePos].title}__**
           Requested By: ${queue.songs[queuePos].username}\n`)
         if (queuePos === 9) {
           if (queue.songs.length - 10 !== 0) queueList.push(`*And ${queue.songs.length - 10} more...*`)

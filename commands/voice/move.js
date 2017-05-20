@@ -1,4 +1,5 @@
 const Commando = require('discord.js-commando')
+const {stripIndents} = require('common-tags')
 
 module.exports = class MoveBotCommand extends Commando.Command {
   constructor (client) {
@@ -21,7 +22,7 @@ module.exports = class MoveBotCommand extends Commando.Command {
       const response = await msg.reply(`Summon me with the \`${cmdPrefix}add\` command first!`)
       response.delete(2000)
       msg.delete(2000)
-    } else if (queue.voiceChannel.members.size - 1 >= msg.member.voiceChannel.members.size) {
+    } else if (queue.voiceChannel.members.size - 1 >= msg.member.voiceChannel.members.size && !msg.member.permissions.has('MANAGE_MESSAGES')) {
       return msg.channel.send({embed: {
         color: 15105570,
         fields: [{
@@ -29,7 +30,7 @@ module.exports = class MoveBotCommand extends Commando.Command {
           value: `Your channel has less people than the one I'm in... Ask an Admin to move me!`
         }]
       }})
-    } else if (queue.voiceChannel.members.size - 1 < msg.member.voiceChannel.members.size) {
+    } else if (queue.voiceChannel.members.size - 1 < msg.member.voiceChannel.members.size || msg.member.permissions.has('MANAGE_MESSAGES')) {
       const botPerms = await voiceChannel.permissionsFor(this.client.user)
       const prefix = this.client.provider.get(msg.guild.id, 'prefix')
       if (!botPerms.has('CONNECT')) {
@@ -56,7 +57,7 @@ module.exports = class MoveBotCommand extends Commando.Command {
       return queue.textChannel.send({embed: {
         color: 15844367,
         title: `I seem to have been moved!`,
-        description: `${msg.author} has moved me to ${queue.voiceChannel}!
+        description: stripIndents`${msg.author} has moved me to ${queue.voiceChannel}!
           Type \`${prefix}help mv\` for more information.`
       }})
     }

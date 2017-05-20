@@ -17,14 +17,12 @@ module.exports = class ResumeCommand extends Commando.Command {
   async run (msg) {
     const queue = this.queue.get(msg.guild.id)
     var userChannel = msg.member.voiceChannel
-    let response
     if (!queue) {
       msg.reply('I\'m not connected to a channel!')
       .then(response => {
         response.delete(2000)
         msg.delete(2000)
       })
-      this.delMsg(msg, response)
     } else {
       const song = queue.songs[0]
       if (song.playing) {
