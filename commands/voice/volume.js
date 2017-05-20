@@ -1,4 +1,5 @@
 const Commando = require('discord.js-commando')
+// const {stripIndents} = require('common-tags')
 
 module.exports = class VolumeControlCommand extends Commando.Command {
   constructor (client) {
@@ -8,7 +9,7 @@ module.exports = class VolumeControlCommand extends Commando.Command {
       memberName: 'volume',
       aliases: ['vol'],
       description: 'Adjusts the volume of the bot.',
-      details: 'Ranges from 0-10. Divides the input by 5, giving you granular control. Decimals are allowed. Using up or down steps the volume by 2',
+      details: `Ranges from 0-10. Divides the input by 10, giving you granular control. Decimals are allowed. Using up or down steps the volume by 2`,
       guildOnly: true,
       throttling: {
         usages: 2,
@@ -47,7 +48,7 @@ module.exports = class VolumeControlCommand extends Commando.Command {
       })
     }
     queue.volume = volume
-    if (queue.songs[0].dispatcher) queue.songs[0].dispatcher.setVolumeLogarithmic(volume / 5)
+    if (queue.songs[0].dispatcher) queue.songs[0].dispatcher.setVolumeLogarithmic(volume / 10)
     return msg.reply(`volume has been set to ${queue.volume}, effective ${queue.volume * 10}%!`).then(m => {
       m.delete(2500)
       msg.delete(2500)
