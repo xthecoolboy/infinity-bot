@@ -112,7 +112,8 @@ module.exports = class AddQueueCommand extends Commando.Command {
         voiceChannel: voiceChannel,
         textChannel: msg.channel,
         connection: null,
-        songs: []
+        songs: [],
+        volume: this.client.provider.get(msg.guild.id, 'defaultVol')
       }
       this.queue.set(msg.guild.id, queue)
 
@@ -169,7 +170,8 @@ module.exports = class AddQueueCommand extends Commando.Command {
           voiceChannel: voiceChannel,
           textChannel: msg.channel,
           connection: null,
-          songs: []
+          songs: [],
+          volume: this.client.provider.get(msg.guild.id, 'defaultVol')
         }
         this.queue.set(msg.guild.id, queue)
         await this.addSong(video2, msg)
@@ -240,6 +242,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
         this.play(guild, queue.songs[0])
       })
     song.dispatcher = dispatcher
+    song.dispatcher.setVolumeLogarithmic(queue.volume / 5)
     song.playing = true
   }
 }
