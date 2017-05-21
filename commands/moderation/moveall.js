@@ -7,7 +7,9 @@ module.exports = class MoveAllCommand extends Commando.Command {
       group: 'moderation',
       memberName: 'moveall',
       aliases: ['mvall', 'mva'],
-      description: 'Moves all users in one channel into another',
+      examples: ['moveall <departChannel> <destChannel> ', 'mvall <departChannel> <destChannel>', 'mva <departChannel> <destChannel>'],
+      description: 'Moves all users in one channel into another.',
+      details: 'If there are channels that are similar in name and the input is ambiguous about which to use, then the channel that comes first alphanumerically will be used.',
       guildOnly: true,
       throttling: {
         usages: 2,
@@ -28,16 +30,20 @@ module.exports = class MoveAllCommand extends Commando.Command {
     })
   }
   run (msg, args) {
-    const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase() === args.departChannel)
-    const destChannel = msg.guild.channels.find(channel => channel.name.toLowerCase() === args.destChannel)
-    var memberArray = departChannel.members.array()
-    console.log(memberArray.length)
-    if (departChannel && destChannel) {
-      console.log('pass')
-      for (var memberPos = 0; memberPos < memberArray.length; memberPos++) {
-        console.log(memberArray[memberPos])
-        memberArray[memberPos].setVoiceChannel(destChannel)
-      }
+    const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.departChannel.toLowerCase()))
+    const destChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.destChannel.toLowerCase()))
+    if (!departChannel && !destChannel) {
+      return msg.reply(`both departure and destination channels are nonexistant. Choose an existing one.`)
+    }
+    if (!departChannel) {
+      return msg.reply(`invalid departure channel. Choose an existing voice channel.`)
+    }
+    if (!destChannel) {
+      return msg.reply(`invalid destination channel. Choose an existing voicechannel.`)
+    }
+    let memberArray = departChannel.members.array()
+    for (var memberPos = 0; memberPos < memberArray.length; memberPos++) {
+      memberArray[memberPos].setVoiceChannel(destChannel)
     }
   }
 }

@@ -40,7 +40,3 @@ client.registry
   .registerCommandsIn(path.join(__dirname, 'commands'))
 
 client.login(config.token)
-
-/* process.on('unhandledRejection', err => {
-  console.error('[ERROR] Uncaught Promise: \n' + err.stack)
-}) */
