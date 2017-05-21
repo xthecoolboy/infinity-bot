@@ -33,7 +33,8 @@ client.registry
   .registerGroups([
     ['voice', 'Voice Commands'],
     ['misc', 'Miscellanious Commands'],
-    ['util', 'Utility Commands']
+    ['util', 'Utility Commands'],
+    ['moderation', 'Moderation Commands']
   ])
   .registerDefaults()
   .registerCommandsIn(path.join(__dirname, 'commands'))
