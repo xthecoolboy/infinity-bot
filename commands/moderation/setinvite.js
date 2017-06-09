@@ -21,7 +21,7 @@ module.exports = class SetInviteCommand extends Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || msg.member.hasPermission('MOVE_MEMBERS')
+    return this.client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')
   }
   run (msg, args) {
     const inputCode = args.code
