@@ -29,6 +29,9 @@ module.exports = class MoveAllCommand extends Commando.Command {
       ]
     })
   }
+  hasPermission (msg) {
+    return this.client.isOwner(msg.author) || msg.member.hasPermission('MOVE_MEMBERS')
+  }
   run (msg, args) {
     const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.departChannel.toLowerCase()))
     const destChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.destChannel.toLowerCase()))
