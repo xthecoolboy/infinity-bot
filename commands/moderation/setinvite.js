@@ -20,6 +20,9 @@ module.exports = class SetInviteCommand extends Command {
       ]
     })
   }
+  hasPermission (msg) {
+    return this.client.isOwner(msg.author) || msg.member.hasPermission('MOVE_MEMBERS')
+  }
   run (msg, args) {
     const inputCode = args.code
     const invCode = this.client.provider.get(msg.guild.id, 'invCode')
