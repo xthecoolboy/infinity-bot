@@ -12,7 +12,7 @@ module.exports = class MinLengthCommand extends Commando.Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || msg.member.hasPermission('ADMINISTRATOR')
+    return this.client.isOwner(msg.author) || msg.member.permisisons.has('ADMINISTRATOR')
   }
   run (msg, args) {
     if (!args) {
