@@ -16,7 +16,7 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
   async run (msg) {
     const queue = this.queue.get(msg.guild.id)
     if (this.client.isOwner(msg.author)) {
-      console.log(queue.songs.length)
+      console.log(queue.songs[0].dispatcher)
     }
   }
   get queue () {
