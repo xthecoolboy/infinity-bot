@@ -213,7 +213,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
 
   play (guild, song) {
     const queue = this.queue.get(guild.id)
-
+    console.log(queue)
     if (!song) {
       if (queue.textChannel) {
         queue.textChannel.send({embed: {
