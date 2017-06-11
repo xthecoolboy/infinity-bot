@@ -57,7 +57,7 @@ module.exports = class MoveBotCommand extends Commando.Command {
       return queue.textChannel.send({embed: {
         color: 15844367,
         title: `I seem to have been moved!`,
-        description: stripIndents`${msg.author} has moved me to ${queue.voiceChannel}!
+        description: stripIndents`${msg.author} has moved me to ${queue.voiceChannel.name}!
           Type \`${prefix}help mv\` for more information.`
       }})
     }

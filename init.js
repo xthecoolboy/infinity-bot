@@ -1,6 +1,7 @@
 'use strict'
 
 const Commando = require('discord.js-commando')
+const { stripIndents } = require('common-tags')
 const path = require('path')
 const sqlite = require('sqlite')
 const config = require('./conf.json')
@@ -20,7 +21,7 @@ client.on('unknownCommand', message => {
   var unknownCmd = message.content.slice(prefix.length)
   console.log(`[WARN] ${message.author.tag} has passed unknown command: ${message.content}`)
   message.channel.send({embed: { color: 15158332,
-    description: `**__Unknown command:__ \`${unknownCmd}\`**
+    description: stripIndents`**__Unknown command:__ \`${unknownCmd}\`**
 
     Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
 })
