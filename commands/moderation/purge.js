@@ -7,8 +7,8 @@ module.exports = class PurgeMessageCommand extends Command {
       group: 'moderation',
       memberName: 'purge',
       examples: ['purge 50'],
-      description: 'Deletes a set number of messages from channel.',
-      details: 'Deletes user specified number of messages from the channel the purge command was sent in.',
+      description: 'Deletes a set number of messages from channel that are younger than 2 weeks old.',
+      details: 'Deletes user specified number of messages younger than 2 weeks old from the channel the purge command was sent in.',
       guildOnly: true,
       args: [
         {
@@ -24,10 +24,14 @@ module.exports = class PurgeMessageCommand extends Command {
   }
   run (msg, args) {
     const input = args.input
-    msg.channel.bulkDelete(input)
+    if (input >= 100) {
+      return msg.reply(`input must be less than 100! (Discord limitation, sorry!)`)
+    } else if (input <= 2) {
+      return msg.reply(`input must be greater than 2!`)
+    }
+    msg.channel.bulkDelete(input + 1, true)
     msg.reply(`deleted ${input} message(s)!`).then(m => {
-      m.delete(10000)
-      msg.delete(10000)
+      m.delete(5000)
     })
   }
 }
