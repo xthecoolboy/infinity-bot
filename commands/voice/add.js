@@ -212,8 +212,8 @@ module.exports = class AddQueueCommand extends Commando.Command {
   }
 
   play (guild, song) {
+    console.log('playing')
     const queue = this.queue.get(guild.id)
-    console.log(queue)
     if (!song) {
       if (queue.textChannel) {
         queue.textChannel.send({embed: {
@@ -221,7 +221,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
           description: `No more songs in queue, leaving voice!`
         }})
       }
-      queue.voiceChannel.leave()
+      this.client.voiceConnections.first().channel.leave()
       this.queue.delete(guild.id)
       return
     }
@@ -233,12 +233,11 @@ module.exports = class AddQueueCommand extends Commando.Command {
       image: {url: song.thumbnail}}
     })
     let stream = ytdl(song.url, {audioonly: true})
-    let streamError = false
 
     const dispatcher = queue.connection.playStream(stream, {passes: 3})
       .on('end', () => {
-        if (streamError) return
         queue.songs.shift()
+        console.log('shifted')
         this.play(guild, queue.songs[0])
       })
     song.dispatcher = dispatcher

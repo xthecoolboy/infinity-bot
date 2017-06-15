@@ -11,20 +11,16 @@ module.exports = class SkipCommand extends Command {
       guildOnly: true
     })
   }
-  run (msg) {
+  async run (msg) {
     const queue = this.queue.get(msg.guild.id)
     if (!queue) {
       return msg.reply(`there's nothing for me to skip! Add a song first!`)
     }
-    const currentSong = queue.songs[0]
-    currentSong.dispatcher.end()
+    const song = queue.songs[0]
+    song.dispatcher.end()
   }
   get queue () {
     if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
     return this._queue
-  }
-  get play () {
-    if (!this._play) this._play = this.client.registry.resolveCommand('voice:add').play
-    return this._play
   }
 }
