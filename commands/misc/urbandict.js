@@ -32,13 +32,13 @@ module.exports = class UrbanDictionaryCommand extends Command {
     }
 
     const search = urban(args)
-    if (!search.word) {
-      return msg.reply(`sorry! I've got nothing from Urban Dictionary on that.`).then(m => {
-        msg.delete(2500)
-        m.delete(2500)
-      })
-    }
     search.first(output => {
+      if (!output) {
+        return msg.reply(`sorry! I've got nothing from Urban Dictionary on that.`).then(m => {
+          msg.delete(2500)
+          m.delete(2500)
+        })
+      }
       msg.channel.send({embed: {
         color: 15844367,
         title: output.word.charAt(0).toUpperCase() + output.word.slice(1),
