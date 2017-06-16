@@ -242,7 +242,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
         this.play(guild, queue.songs[0])
       })
     song.dispatcher = dispatcher
-    song.dispatcher.setVolumeLogarithmic(queue.volume / 5)
+    song.dispatcher.setVolumeLogarithmic(queue.volume / 10)
     song.playing = true
   }
 }
