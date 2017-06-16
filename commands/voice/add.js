@@ -214,7 +214,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
   play (guild, song) {
     const queue = this.queue.get(guild.id)
 
-    if (!song) {
+    if (!song && queue) {
       if (queue.textChannel) {
         queue.textChannel.send({embed: {
           color: 15844367,

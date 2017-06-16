@@ -26,9 +26,10 @@ client.on('unknownCommand', message => {
     Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
 })
 
-sqlite.open(path.join(__dirname, 'settings.sqlite3')).then((db) => {
-  client.setProvider(new Commando.SQLiteProvider(db))
-})
+sqlite.open(path.join(__dirname, 'settings.sqlite3'))
+  .then((db) => {
+    client.setProvider(new Commando.SQLiteProvider(db))
+  })
 
 client.registry
   .registerGroups([
