@@ -1,5 +1,4 @@
 const { Command } = require('discord.js-commando')
-const { stripIndents } = require('discord.js-commando')
 
 module.exports = class RollCommand extends Command {
   constructor (client) {
@@ -15,7 +14,7 @@ module.exports = class RollCommand extends Command {
       ],
       args: [
         {
-          key: 'size',
+          key: 'dice',
           default: '6',
           prompt: '',
           type: 'integer'
@@ -24,8 +23,7 @@ module.exports = class RollCommand extends Command {
     })
   }
   async run (msg, args) {
-    const die = args.size
-    const roll = Math.floor(Math.random() * die + 1)
+    const roll = Math.floor(Math.random() * args.dice + 1)
     msg.channel.send(`${msg.member.user} rolled a ${roll}`)
   }
 }
