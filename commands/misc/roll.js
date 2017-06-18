@@ -11,19 +11,22 @@ module.exports = class RollCommand extends Command {
         'roll',
         'roll 10',
         'roll 20'
-      ],
-      args: [
-        {
-          key: 'dice',
-          default: '6',
-          prompt: '',
-          type: 'integer'
-        }
       ]
     })
   }
   async run (msg, args) {
-    const roll = Math.floor(Math.random() * args.dice + 1)
-    msg.channel.send(`${msg.member.user} rolled a ${roll}`)
+    if (args.toLowerCase().startsWith('d')) {
+      const dice = args.slice(1)
+      const roll = Math.floor(Math.random() * dice + 1)
+      if (isNaN(roll)) return msg.reply(`invalid input...`)
+      return msg.channel.send(`${msg.member.user} rolled a ${roll}`)
+    }
+    if (!args) {
+      const roll = Math.floor(Math.random() * 6 + 1)
+      return msg.channel.send(`${msg.member.user} rolled a ${roll}`)
+    }
+    const roll = Math.floor(Math.random() * args + 1)
+    if (isNaN(roll)) return msg.reply(`invalid input...`)
+    return msg.channel.send(`${msg.member.user} rolled a ${roll}`)
   }
 }
