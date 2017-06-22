@@ -1,5 +1,4 @@
 const Commando = require('discord.js-commando')
-const fs = require('fs')
 
 module.exports = class CheckVoiceCommand extends Commando.Command {
   constructor (client) {
@@ -17,9 +16,6 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
   }
 
   async run (msg) {
-    fs.readFile('./users.json', (err, data) => {
-      if (err) throw err
-      console.log(JSON.parse(data))
-    })
+    console.log(msg.guild)
   }
 }
