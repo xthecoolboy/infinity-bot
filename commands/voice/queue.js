@@ -19,7 +19,6 @@ module.exports = class ViewQueueCommand extends Commando.Command {
   async run (msg, args) {
     const queue = this.queue.get(msg.guild.id)
     const prefix = this.client.provider.get(msg.guild.id, 'prefix')
-    const currentTime = queue.songs[0].dispatcher ? queue.songs[0].dispatcher.time / 1000 : 0
     if (!queue) {
       msg.channel.send({embed: {
         color: 10038562,
@@ -27,6 +26,7 @@ module.exports = class ViewQueueCommand extends Commando.Command {
         description: `There's no queue currently! Better queue some songs up with \`${prefix}add\`!`
       }})
     } else {
+      const currentTime = queue.songs[0].dispatcher ? queue.songs[0].dispatcher.time / 1000 : 0
       var queueList = []
       var currentSongTitle
       if (queue.songs[0].title.length > 59) {

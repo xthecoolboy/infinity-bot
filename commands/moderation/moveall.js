@@ -35,6 +35,7 @@ module.exports = class MoveAllCommand extends Commando.Command {
   run (msg, args) {
     const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.departChannel.toLowerCase()))
     const destChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.destChannel.toLowerCase()))
+    const queue = this.queue.get(msg.guild.id)
     if (!departChannel && !destChannel) {
       return msg.reply(`both departure and destination channels are nonexistant. Choose an existing one.`)
     }
@@ -46,7 +47,12 @@ module.exports = class MoveAllCommand extends Commando.Command {
     }
     let memberArray = departChannel.members.array()
     for (var memberPos = 0; memberPos < memberArray.length; memberPos++) {
+      if (memberArray[memberPos].id === this.client.user.id) queue.voiceChannel = destChannel
       memberArray[memberPos].setVoiceChannel(destChannel)
     }
+  }
+  get queue () {
+    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
+    return this._queue
   }
 }
