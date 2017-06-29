@@ -25,7 +25,6 @@ client.on('unknownCommand', message => {
 
     Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
 })
-
 sqlite.open(path.join(__dirname, 'settings.sqlite3'))
   .then((db) => {
     client.setProvider(new Commando.SQLiteProvider(db))
@@ -40,6 +39,7 @@ client.registry
     ['info', 'Lookup Commands']
   ])
   .registerDefaults()
+  .registerTypesIn(path.join(__dirname, 'types'))
   .registerCommandsIn(path.join(__dirname, 'commands'))
 
 client.login(config.token)

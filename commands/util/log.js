@@ -16,6 +16,6 @@ module.exports = class CheckVoiceCommand extends Commando.Command {
   }
 
   async run (msg) {
-    console.log(msg.guild)
+    console.log(this.client.registry.types.get('member'))
   }
 }
