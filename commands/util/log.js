@@ -16,7 +16,7 @@ module.exports = class DebugCommand extends Commando.Command {
   }
 
   async run (msg) {
-    const queue = this.queue
+    const queue = this.queue.get(msg.guild.id)
     console.log(queue)
   }
   get queue () {
