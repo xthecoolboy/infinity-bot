@@ -1,7 +1,7 @@
-const Commando = require('discord.js-commando')
-const {stripIndents} = require('common-tags')
+const { Command } = require('discord.js-commando')
+const { stripIndents } = require('common-tags')
 
-module.exports = class ViewQueueCommand extends Commando.Command {
+module.exports = class ViewQueueCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'queue',

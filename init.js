@@ -40,9 +40,11 @@ client.registry
     ['voice', 'Voice Commands'],
     ['misc', 'Miscellanious Commands'],
     ['util', 'Utility Commands'],
-    ['moderation', 'Moderation Commands']
+    ['moderation', 'Moderation Commands'],
+    ['info', 'Lookup/Informational Commands']
   ])
   .registerDefaults()
+  .registerTypesIn(path.join(__dirname, 'types'))
   .registerCommandsIn(path.join(__dirname, 'commands'))
 
 process.on('unhandledRejection', err => {

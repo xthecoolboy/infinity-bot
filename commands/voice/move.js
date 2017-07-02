@@ -1,7 +1,7 @@
-const Commando = require('discord.js-commando')
-const {stripIndents} = require('common-tags')
+const { Command } = require('discord.js-commando')
+const { stripIndents } = require('common-tags')
 
-module.exports = class MoveBotCommand extends Commando.Command {
+module.exports = class MoveBotCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'move',
