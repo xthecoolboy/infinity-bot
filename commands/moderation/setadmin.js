@@ -1,4 +1,5 @@
 const { Command } = require('discord.js-commando')
+const fs = require('fs')
 
 module.exports = class AdminChannel extends Command {
   constructor (client) {
@@ -19,8 +20,11 @@ module.exports = class AdminChannel extends Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || msg.member.permissions.has('ADMINISTRATOR')
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level === 3) return true
+    return this.client.isOwner(msg.author)
   }
+
   run (msg, args) {
     const currentChannelID = this.client.provider.get(msg.guild.id, 'adminChannel')
     if (!args.channel) {

@@ -19,22 +19,19 @@ module.exports = class WhoIsCommand extends Command {
       ]
     })
   }
+  getToken (msg, member) {
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
+    for (var i in userList) {
+      if (userList[i].name === member.user.tag && userList[i].token) {
+        return userList[i].token
+      } else if (!userList[i].token) {
+        return '(none)'
+      }
+    }
+  }
   run (msg, args) {
     const member = args.user
     const adminChannelID = this.client.provider.get(msg.guild.id, 'adminChannel')
-    const userToken = fs.readFileSync('./users.json', (err, data) => {
-      if (err) return console.error(err)
-      const userList = JSON.parse(data)
-      for (var i in userList) {
-        if (userList[i].name === member.user.tag && userList[i].token) {
-          return userList[i].token
-        } else if (!userList[i].token) {
-          return '(none)'
-        }
-      }
-      return 'User is not registered for voting!'
-    })
-    console.log(userToken)
     return msg.channel.send({embed: {
       color: 3447003,
       description: `${member.user.username === member.displayName ? member.user.tag : member.user.tag + ` (${member.displayName})`}`,
@@ -53,7 +50,7 @@ module.exports = class WhoIsCommand extends Command {
           value: stripIndents`
           ‣ Role(s): ${member.roles.map(roles => `\`${roles.name}\``).join(', ')}
           ‣ Joined on:  \`${member.joinedAt}\`${member.nickname ? `\n‣ Nickname: \`${member.nickname}\`` : ''}
-          ${msg.channel.id === adminChannelID ? `‣ Token: ${userToken}` : ''}
+          ${msg.channel.id === adminChannelID ? `‣ Token: \`${this.getToken(msg, member)}\`` : ''}
           `
         }
       ]

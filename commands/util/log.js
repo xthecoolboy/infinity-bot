@@ -1,6 +1,7 @@
-const Commando = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
+const fs = require('fs')
 
-module.exports = class DebugCommand extends Commando.Command {
+module.exports = class DebugCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'log',
@@ -11,16 +12,17 @@ module.exports = class DebugCommand extends Commando.Command {
     })
   }
 
-  hasPermission (msg) {
-    return this.client.isOwner(msg.author)
+  userLevel (msg) {
+    var userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => {
+      if (err) return console.error(err)
+    }))
+    for (var i in userList) {
+      if (userList[i].name === msg.author.tag) return userList[i].level
+    }
   }
 
   async run (msg) {
-    const queue = this.queue.get(msg.guild.id)
-    console.log(queue)
-  }
-  get queue () {
-    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
-    return this._queue
+    console.log(this.userLevel(msg))
+    console.log(this.userLevel(msg) < 3)
   }
 }

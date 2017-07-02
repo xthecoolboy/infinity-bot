@@ -1,6 +1,7 @@
-const Commando = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
+const fs = require('fs')
 
-module.exports = class MoveAllCommand extends Commando.Command {
+module.exports = class MoveAllCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'moveall',
@@ -30,7 +31,9 @@ module.exports = class MoveAllCommand extends Commando.Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || msg.member.permissions.has('MOVE_MEMBERS')
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level >= 2) return true
+    return this.client.isOwner(msg.author)
   }
   run (msg, args) {
     const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.departChannel.toLowerCase()))
