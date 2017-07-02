@@ -36,7 +36,6 @@ module.exports = class SetLevelCommand extends Command {
     const memberole = args.memberole
     const level = args.level
     if (memberole.user) {
-      console.log('is user')
       fs.readFile('./users.json', 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
@@ -55,9 +54,14 @@ module.exports = class SetLevelCommand extends Command {
             }
           }
         }
+        const userInfo = {name: memberole.user.tag, level: level}
+        userList.push(userInfo)
+        fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+          if (err) console.err('[ERROR] ' + err)
+        })
+        return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
       })
     } else {
-      console.log('is role')
       fs.readFile('./users.json', 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
@@ -72,11 +76,11 @@ module.exports = class SetLevelCommand extends Command {
                 fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
                   if (err) console.err('[ERROR] ' + err)
                 })
+                return msg.reply(`Members in ${memberole} have had their levels set to \`${level}\``)
               }
             }
           }
         }
-        return msg.reply(`Members in ${memberole} have had their levels set to \`${level}\``)
       })
     }
   }
