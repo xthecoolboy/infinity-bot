@@ -36,7 +36,8 @@ module.exports = class SetLevelCommand extends Command {
     const memberole = args.memberole
     const level = args.level
     if (memberole.user) {
-      fs.readFile('./users.json', (err, data) => {
+      console.log('is user')
+      fs.readFile('./users.json', 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
         for (var i in userList) {
@@ -56,7 +57,8 @@ module.exports = class SetLevelCommand extends Command {
         }
       })
     } else {
-      fs.readFile('./users.json', (err, data) => {
+      console.log('is role')
+      fs.readFile('./users.json', 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
         var roleUserArray = memberole.members.array()
