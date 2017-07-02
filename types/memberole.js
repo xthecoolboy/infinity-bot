@@ -23,8 +23,10 @@ module.exports = class MembeRoleArgumentType extends ArgumentType {
     let userType = this.client.registry.types.get('member')
     let roleType = this.client.registry.types.get('role')
     if (this.isMemb) {
+      this.isMemb = false
       return userType.parse(value, msg)
     } else if (this.isRole) {
+      this.isRole = false
       return roleType.parse(value, msg)
     }
   }
