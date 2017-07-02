@@ -76,11 +76,23 @@ module.exports = class SetLevelCommand extends Command {
                 fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
                   if (err) console.err('[ERROR] ' + err)
                 })
-                return msg.reply(`Members in ${memberole} have had their levels set to \`${level}\``)
               }
             }
           }
         }
+        function findUser (user) {
+          return user.name === roleUserArray[h].user.tag
+        }
+        for (var h in roleUserArray) {
+          if (!userList.find(findUser)) {
+            const userInfo = {name: roleUserArray[h].user.tag, level: level}
+            userList.push(userInfo)
+            fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+              if (err) console.err('[ERROR] ' + err)
+            })
+          }
+        }
+        return msg.reply(`members in ${memberole} have had their levels set to \`${level}\``)
       })
     }
   }

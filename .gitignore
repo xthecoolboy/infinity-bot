@@ -2,3 +2,4 @@ conf.json
 *.sqlite3
 .DS_Store
 ./commands/util/log.js
+users.json
