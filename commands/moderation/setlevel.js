@@ -28,14 +28,9 @@ module.exports = class SetLevelCommand extends Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || fs.readFileSync('./users.json', (err, data) => {
-      if (err) console.error(err)
-      var userList = JSON.parse(data)
-      for (var i in userList) {
-        if (userList[i].name === msg.member.tag && userList[i].level === 3) return true
-      }
-      return false
-    })
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level === 3) return true
+    return this.client.isOwner(msg.author)
   }
   run (msg, args) {
     const memberole = args.memberole
