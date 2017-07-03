@@ -43,7 +43,7 @@ module.exports = class WhoIsCommand extends Command {
           ‣ Joined Discord: \`${member.user.createdAt}\`
           ‣ Bot User: \`${member.user.bot}\`
           ‣ Status: \`${member.user.presence.status.charAt(0).toUpperCase() + member.user.presence.status.slice(1)}\`
-          ‣ Currently Playing: ${member.user.presence.game.name}`
+          ‣ Currently Playing: ${member.user.presence.game ? member.user.presence.game.name : '`Nothing`'}`
         },
         {
           name: '» Server Member Details:',
