@@ -17,7 +17,7 @@ module.exports = class SkipCommand extends Command {
       return msg.reply(`there's nothing for me to skip! Add a song first!`)
     }
     const song = queue.songs[0]
-    song.dispatcher.end()
+    song.dispatcher.end('skipped')
   }
   get queue () {
     if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue

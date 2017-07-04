@@ -219,7 +219,6 @@ module.exports = class AddQueueCommand extends Command {
   }
 
   play (guild, song) {
-    console.log('playing')
     const queue = this.queue.get(guild.id)
     if (!song && queue) {
       if (queue.textChannel) {
@@ -242,10 +241,16 @@ module.exports = class AddQueueCommand extends Command {
     let stream = ytdl(song.url, {audioonly: true})
 
     const dispatcher = queue.connection.playStream(stream, {passes: 3})
-      .on('end', () => {
-        queue.songs.shift()
-        console.log('shifted')
-        this.play(guild, queue.songs[0])
+      .on('end', reason => {
+        if (reason === 'skipped') {
+          setTimeout(() => {
+            queue.songs.shift()
+            this.play(guild, queue.songs[0])
+          }, 150)
+        } else {
+          queue.songs.shift()
+          this.play(guild, queue.songs[0])
+        }
       })
     song.dispatcher = dispatcher
     song.dispatcher.setVolumeLogarithmic(queue.volume / 10)
