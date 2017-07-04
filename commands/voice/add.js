@@ -1,12 +1,13 @@
-const Commando = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
 const ytdl = require('ytdl-core')
 const YouTube = require('simple-youtube-api')
 const Song = require('../../struct/Song.js')
 const {stripIndents} = require('common-tags')
+const fs = require('fs')
 
 const config = require('../../conf.json')
 
-module.exports = class AddQueueCommand extends Commando.Command {
+module.exports = class AddQueueCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'add',
@@ -32,6 +33,12 @@ module.exports = class AddQueueCommand extends Commando.Command {
     this.queue = new Map()
     this.youtube = new YouTube(config.googleAPIKey)
   }
+
+  userLevel (msg) {
+    var userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
+    for (var i in userList) if (userList[i].name === msg.author.tag) return userList[i].level
+  }
+
   async run (msg, args) {
     const userInput = args.userInput
     const queue = this.queue.get(msg.guild.id)
@@ -62,7 +69,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
           }]
         }})
       }
-    } else if (voiceChannel !== queue.voiceChannel && !msg.member.permissions.has('MANAGE_MESSAGES')) {
+    } else if (voiceChannel !== queue.voiceChannel && this.userLevel(msg) < 2) {
       const prefix = this.client.provider.get(msg.guild.id, 'prefix')
       response = await msg.channel.send({embed: {
         color: 10038562,
@@ -203,7 +210,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
     const queue = this.queue.get(msg.guild.id)
     const song = new Song(video, msg.member)
     const minLength = this.client.provider.get(msg.guild.id, 'minLength')
-    if (song.length < minLength && !song.member.permissions.has('MANAGE_MESSAGES')) {
+    if (song.length < minLength && this.userLevel(msg) < 2) {
       return `\n**${song.title} is too short to play...**`
     } else {
       queue.songs.push(song)
@@ -214,7 +221,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
   play (guild, song) {
     console.log('playing')
     const queue = this.queue.get(guild.id)
-    if (!song) {
+    if (!song && queue) {
       if (queue.textChannel) {
         queue.textChannel.send({embed: {
           color: 15844367,
@@ -241,7 +248,7 @@ module.exports = class AddQueueCommand extends Commando.Command {
         this.play(guild, queue.songs[0])
       })
     song.dispatcher = dispatcher
-    song.dispatcher.setVolumeLogarithmic(queue.volume / 5)
+    song.dispatcher.setVolumeLogarithmic(queue.volume / 10)
     song.playing = true
   }
 }

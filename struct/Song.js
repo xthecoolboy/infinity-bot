@@ -25,7 +25,7 @@ module.exports = class Song {
     return this.constructor.timeString(this.length)
   }
   timeLeft (currentTime) {
-    return this.constructor.timeString(this.length - currentTime)
+    return this.constructor.timeString(Math.ceil(this.length - currentTime))
   }
   static timeString (length, forceHours = false) {
     const hours = (Math.floor(length / 3600))

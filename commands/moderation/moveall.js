@@ -1,6 +1,7 @@
-const Commando = require('discord.js-commando')
+const { Command } = require('discord.js-commando')
+const fs = require('fs')
 
-module.exports = class MoveAllCommand extends Commando.Command {
+module.exports = class MoveAllCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'moveall',
@@ -30,11 +31,14 @@ module.exports = class MoveAllCommand extends Commando.Command {
     })
   }
   hasPermission (msg) {
-    return this.client.isOwner(msg.author) || msg.member.permissions.has('MOVE_MEMBERS')
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level >= 2) return true
+    return this.client.isOwner(msg.author)
   }
   run (msg, args) {
     const departChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.departChannel.toLowerCase()))
     const destChannel = msg.guild.channels.find(channel => channel.name.toLowerCase().includes(args.destChannel.toLowerCase()))
+    const queue = this.queue.get(msg.guild.id)
     if (!departChannel && !destChannel) {
       return msg.reply(`both departure and destination channels are nonexistant. Choose an existing one.`)
     }
@@ -46,7 +50,12 @@ module.exports = class MoveAllCommand extends Commando.Command {
     }
     let memberArray = departChannel.members.array()
     for (var memberPos = 0; memberPos < memberArray.length; memberPos++) {
+      if (memberArray[memberPos].id === this.client.user.id) queue.voiceChannel = destChannel
       memberArray[memberPos].setVoiceChannel(destChannel)
     }
+  }
+  get queue () {
+    if (!this._queue) this._queue = this.client.registry.resolveCommand('voice:add').queue
+    return this._queue
   }
 }

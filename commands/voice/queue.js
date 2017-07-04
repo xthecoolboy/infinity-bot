@@ -1,7 +1,7 @@
-const Commando = require('discord.js-commando')
-const {stripIndents} = require('common-tags')
+const { Command } = require('discord.js-commando')
+const { stripIndents } = require('common-tags')
 
-module.exports = class ViewQueueCommand extends Commando.Command {
+module.exports = class ViewQueueCommand extends Command {
   constructor (client) {
     super(client, {
       name: 'queue',
@@ -26,15 +26,17 @@ module.exports = class ViewQueueCommand extends Commando.Command {
         description: `There's no queue currently! Better queue some songs up with \`${prefix}add\`!`
       }})
     } else {
+      const currentTime = queue.songs[0].dispatcher ? queue.songs[0].dispatcher.time / 1000 : 0
       var queueList = []
       var currentSongTitle
       if (queue.songs[0].title.length > 59) {
         currentSongTitle = queue.songs[0].title.slice(0, 58)
       }
       queueList.push(stripIndents`**Now Playing: __${queue.songs[0].title.length > 59 ? `${currentSongTitle}...` : queue.songs[0].title}__**
-        Requested by: ${queue.songs[0].username}\n`)
+        **Requested by:** ${queue.songs[0].username}
+        **Time Left:** ${queue.songs[0].timeLeft(currentTime)}\n`)
       if (queue.songs[1]) {
-        queueList.push(`Up next...`)
+        queueList.push(`*Up next...*`)
       }
 
       for (var queuePos = 1; queuePos < queue.songs.length; queuePos++) {
