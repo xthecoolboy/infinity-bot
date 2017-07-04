@@ -246,7 +246,7 @@ module.exports = class AddQueueCommand extends Command {
           setTimeout(() => {
             queue.songs.shift()
             this.play(guild, queue.songs[0])
-          }, 150)
+          }, 5)
         } else {
           queue.songs.shift()
           this.play(guild, queue.songs[0])
