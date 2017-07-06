@@ -18,11 +18,10 @@ module.exports = class TokenCommand extends Command {
     return this.client.isOwner(msg.author)
   }
   async run (msg) {
-    var userList = []
     const dmChannel = await msg.member.createDM()
     fs.readFile('./users.json', 'utf8', (err, data) => {
       if (err) console.error(err)
-      userList = JSON.parse(data)
+      var userList = JSON.parse(data)
       for (var i in userList) {
         if (userList[i].id === msg.member.id && userList[i].token) {
           if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag

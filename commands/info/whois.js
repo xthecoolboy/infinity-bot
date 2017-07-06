@@ -29,6 +29,16 @@ module.exports = class WhoIsCommand extends Command {
       }
     }
   }
+  getLevel (msg, member) {
+    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
+    for (var i in userList) {
+      if (userList[i].id === member.user.id && userList[i].level) {
+        return userList[i].level
+      } else if (!userList[i].level) {
+        return '(none)'
+      }
+    }
+  }
   run (msg, args) {
     const member = args.user
     const adminChannelID = this.client.provider.get(msg.guild.id, 'adminChannel')
@@ -50,6 +60,7 @@ module.exports = class WhoIsCommand extends Command {
           value: stripIndents`
           ‣ Role(s): ${member.roles.map(roles => `\`${roles.name}\``).join(', ')}
           ‣ Joined on:  \`${member.joinedAt}\`${member.nickname ? `\n‣ Nickname: \`${member.nickname}\`` : ''}
+          ‣ Command Level: \`${this.getLevel(msg, member)}\`
           ${msg.channel.id === adminChannelID ? `‣ Token: \`${this.getToken(msg, member)}\`` : ''}
           `
         }
