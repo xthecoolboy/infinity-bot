@@ -17,11 +17,11 @@ client.on('ready', () => {
   console.log(`[INFO] Infinity Bot v${packageInfo.version} started`)
   client.user.setGame('with Schrodinger\'s cat')
 })
-  .on('unknownCommand', message => {
-    var prefix = client.provider.get(message.guild.id, 'prefix')
-    var unknownCmd = message.content.slice(prefix.length)
-    console.log(`[WARN] ${message.author.tag} has passed unknown command: ${message.content}`)
-    message.channel.send({embed: { color: 15158332,
+  .on('unknownCommand', msg => {
+    var prefix = client.provider.get(msg.guild.id, 'prefix')
+    var unknownCmd = msg.content.slice(prefix.length).substr(0, msg.content.indexOf(' '))
+    console.log(`[WARN] ${msg.author.tag} has passed unknown command: ${unknownCmd}`)
+    msg.channel.send({embed: { color: 15158332,
       description: stripIndents`**__Unknown command:__ \`${unknownCmd}\`**
 
       Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
