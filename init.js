@@ -5,6 +5,7 @@ const { stripIndents } = require('common-tags')
 const path = require('path')
 const sqlite = require('sqlite')
 const config = require('./conf.json')
+const packageInfo = require('./package.json')
 const client = new Commando.Client({
   owner: config.ownerID,
   unknownCommandResponse: false,
@@ -12,7 +13,7 @@ const client = new Commando.Client({
 })
 
 client.on('ready', () => {
-  console.log('[INFO] ' + config.botName + ' ' + config.botVersion + ' ' + 'started')
+  console.log(`[INFO] Infinity Bot v${packageInfo.version} started`)
   client.user.setGame('with Schrodinger\'s cat')
 })
   .on('unknownCommand', message => {
