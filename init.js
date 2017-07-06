@@ -1,4 +1,4 @@
-'use strict'
+#!/usr/bin/env node
 
 const Commando = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
