@@ -220,7 +220,6 @@ module.exports = class AddQueueCommand extends Command {
 
   play (guild, song) {
     const queue = this.queue.get(guild.id)
-
     if (!song && queue) {
       if (queue.textChannel) {
         queue.textChannel.send({embed: {
@@ -228,7 +227,7 @@ module.exports = class AddQueueCommand extends Command {
           description: `No more songs in queue, leaving voice!`
         }})
       }
-      queue.voiceChannel.leave()
+      this.client.voiceConnections.first().channel.leave()
       this.queue.delete(guild.id)
       return
     }
@@ -240,13 +239,18 @@ module.exports = class AddQueueCommand extends Command {
       image: {url: song.thumbnail}}
     })
     let stream = ytdl(song.url, {audioonly: true})
-    let streamError = false
 
     const dispatcher = queue.connection.playStream(stream, {passes: 3})
-      .on('end', () => {
-        if (streamError) return
-        queue.songs.shift()
-        this.play(guild, queue.songs[0])
+      .on('end', reason => {
+        if (reason === 'skipped') {
+          setTimeout(() => {
+            queue.songs.shift()
+            this.play(guild, queue.songs[0])
+          }, 5)
+        } else {
+          queue.songs.shift()
+          this.play(guild, queue.songs[0])
+        }
       })
     song.dispatcher = dispatcher
     song.dispatcher.setVolumeLogarithmic(queue.volume / 10)
