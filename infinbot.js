@@ -1,10 +1,12 @@
-'use strict'
+#!/usr/bin/env node
 
 const Commando = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
 const path = require('path')
+const os = require('os')
 const sqlite = require('sqlite')
-const config = require('./conf.json')
+const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
+const packageInfo = require('./package.json')
 const client = new Commando.Client({
   owner: config.ownerID,
   unknownCommandResponse: false,
@@ -12,14 +14,14 @@ const client = new Commando.Client({
 })
 
 client.on('ready', () => {
-  console.log('[INFO] ' + config.botName + ' ' + config.botVersion + ' ' + 'started')
+  console.log(`[INFO] Infinity Bot v${packageInfo.version} started`)
   client.user.setGame('with Schrodinger\'s cat')
 })
-  .on('unknownCommand', message => {
-    var prefix = client.provider.get(message.guild.id, 'prefix')
-    var unknownCmd = message.content.slice(prefix.length)
-    console.log(`[WARN] ${message.author.tag} has passed unknown command: ${message.content}`)
-    message.channel.send({embed: { color: 15158332,
+  .on('unknownCommand', msg => {
+    var prefix = client.provider.get(msg.guild.id, 'prefix')
+    var unknownCmd = msg.content.slice(prefix.length).substr(0, msg.content.indexOf(' '))
+    console.log(`[WARN] ${msg.author.tag} has passed unknown command: ${unknownCmd}`)
+    msg.channel.send({embed: { color: 15158332,
       description: stripIndents`**__Unknown command:__ \`${unknownCmd}\`**
 
       Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
@@ -31,7 +33,7 @@ client.on('ready', () => {
     }
   })
 
-sqlite.open(path.join(__dirname, 'settings.sqlite3')).then((db) => {
+sqlite.open(path.join(os.homedir(), '/.config/infinity-bot/settings.sqlite3')).then((db) => {
   client.setProvider(new Commando.SQLiteProvider(db))
 })
 

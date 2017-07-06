@@ -1,5 +1,7 @@
 const { Command } = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
+const path = require('path')
+const os = require('os')
 const fs = require('fs')
 
 module.exports = class WhoIsCommand extends Command {
@@ -20,11 +22,21 @@ module.exports = class WhoIsCommand extends Command {
     })
   }
   getToken (msg, member) {
-    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
+    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
     for (var i in userList) {
-      if (userList[i].name === member.user.tag && userList[i].token) {
+      if (userList[i].id === member.user.id && userList[i].token) {
         return userList[i].token
       } else if (!userList[i].token) {
+        return '(none)'
+      }
+    }
+  }
+  getLevel (msg, member) {
+    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
+    for (var i in userList) {
+      if (userList[i].id === member.user.id && userList[i].level) {
+        return userList[i].level
+      } else if (!userList[i].level) {
         return '(none)'
       }
     }
@@ -50,6 +62,7 @@ module.exports = class WhoIsCommand extends Command {
           value: stripIndents`
           ‣ Role(s): ${member.roles.map(roles => `\`${roles.name}\``).join(', ')}
           ‣ Joined on:  \`${member.joinedAt}\`${member.nickname ? `\n‣ Nickname: \`${member.nickname}\`` : ''}
+          ‣ Command Level: \`${this.getLevel(msg, member)}\`
           ${msg.channel.id === adminChannelID ? `‣ Token: \`${this.getToken(msg, member)}\`` : ''}
           `
         }

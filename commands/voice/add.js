@@ -1,11 +1,13 @@
 const { Command } = require('discord.js-commando')
 const ytdl = require('ytdl-core')
 const YouTube = require('simple-youtube-api')
+const os = require('os')
+const path = require('path')
 const Song = require('../../struct/Song.js')
 const {stripIndents} = require('common-tags')
 const fs = require('fs')
 
-const config = require('../../conf.json')
+const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 
 module.exports = class AddQueueCommand extends Command {
   constructor (client) {
@@ -35,8 +37,8 @@ module.exports = class AddQueueCommand extends Command {
   }
 
   userLevel (msg) {
-    var userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
-    for (var i in userList) if (userList[i].name === msg.author.tag) return userList[i].level
+    var userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
+    for (var i in userList) if (userList[i].id === msg.author.id) return userList[i].level
   }
 
   async run (msg, args) {
