@@ -1,6 +1,6 @@
 {
   "name": "infinity-bot",
-  "version": "1.2.5-3",
+  "version": "1.2.5-4",
   "description": "Bot used for Airstrike-Infinity's Discord Server",
   "main": "init.js",
   "scripts": {
