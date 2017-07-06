@@ -2,10 +2,7 @@
   "name": "infinity-bot",
   "version": "1.2.5-5",
   "description": "Bot used for Airstrike-Infinity's Discord Server",
-  "main": "init.js",
-  "bin": {
-    "start-infinbot": "./init.js"
-  },
+  "bin": "./infinbot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
