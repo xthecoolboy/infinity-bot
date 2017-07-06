@@ -3,8 +3,9 @@
 const Commando = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
 const path = require('path')
+const os = require('os')
 const sqlite = require('sqlite')
-const config = require('./conf.json')
+const config = require(path.join(os.homedir(), '/botconfigs/conf.json'))
 const packageInfo = require('./package.json')
 const client = new Commando.Client({
   owner: config.ownerID,
@@ -32,7 +33,7 @@ client.on('ready', () => {
     }
   })
 
-sqlite.open(path.join(__dirname, 'settings.sqlite3')).then((db) => {
+sqlite.open(path.join(os.homedir(), '/botconfigs/settings.sqlite3')).then((db) => {
   client.setProvider(new Commando.SQLiteProvider(db))
 })
 

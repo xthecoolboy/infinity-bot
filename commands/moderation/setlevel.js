@@ -1,4 +1,6 @@
 const { Command } = require('discord.js-commando')
+const path = require('path')
+const os = require('os')
 const fs = require('fs')
 
 module.exports = class SetLevelCommand extends Command {
@@ -28,7 +30,7 @@ module.exports = class SetLevelCommand extends Command {
     })
   }
   hasPermission (msg) {
-    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/botconfigs/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
     for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
     return this.client.isOwner(msg.author)
   }
@@ -36,14 +38,14 @@ module.exports = class SetLevelCommand extends Command {
     const memberole = args.memberole
     const level = args.level
     if (memberole.user) {
-      fs.readFile('./users.json', 'utf8', (err, data) => {
+      fs.readFile(path.join(os.homedir(), '/botconfigs/users.json'), 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
         for (var i in userList) {
           if (userList[i].id === memberole.user.id) {
             if (userList[i].level && !level) {
               if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
-              fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+              fs.writeFile(path.join(os.homedir(), '/botconfigs/users.json'), JSON.stringify(userList), (err) => {
                 if (err) console.err('[ERROR] ' + err)
               })
               return msg.reply(`${memberole === msg.member ? 'your' : memberole + `'s`} current command level is \`${userList[i].level}\``)
@@ -52,7 +54,7 @@ module.exports = class SetLevelCommand extends Command {
             } else if (level) {
               if (userList[i].name !== memberole.user.tag) userList[i].name = memberole.user.tag
               userList[i].level = level
-              fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+              fs.writeFile(path.join(os.homedir(), '/botconfigs/users.json'), JSON.stringify(userList), (err) => {
                 if (err) console.err('[ERROR] ' + err)
               })
               return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
@@ -61,13 +63,13 @@ module.exports = class SetLevelCommand extends Command {
         }
         const userInfo = {id: memberole.user.id, name: memberole.user.tag, level: level}
         userList.push(userInfo)
-        fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+        fs.writeFile(path.join(os.homedir(), '/botconfigs/users.json'), JSON.stringify(userList), (err) => {
           if (err) console.err('[ERROR] ' + err)
         })
         return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
       })
     } else {
-      fs.readFile('./users.json', 'utf8', (err, data) => {
+      fs.readFile(path.join(os.homedir(), '/botconfigs/users.json'), 'utf8', (err, data) => {
         if (err) return console.error(`[ERROR] ` + err)
         var userList = JSON.parse(data)
         var roleUserArray = memberole.members.array()
@@ -79,7 +81,7 @@ module.exports = class SetLevelCommand extends Command {
               } else {
                 if (userList[i].name !== roleUserArray[g].user.tag) userList[i].name = roleUserArray[g].user.tag
                 userList[i].level = level
-                fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+                fs.writeFile(path.join(os.homedir(), '/botconfigs/users.json'), JSON.stringify(userList), (err) => {
                   if (err) console.err('[ERROR] ' + err)
                 })
               }
@@ -93,7 +95,7 @@ module.exports = class SetLevelCommand extends Command {
           if (!userList.find(findUser)) {
             const userInfo = {id: roleUserArray[h].user.id, name: roleUserArray[h].user.tag, level: level}
             userList.push(userInfo)
-            fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+            fs.writeFile(path.join(os.homedir(), '/botconfigs/users.json'), JSON.stringify(userList), (err) => {
               if (err) console.err('[ERROR] ' + err)
             })
           }

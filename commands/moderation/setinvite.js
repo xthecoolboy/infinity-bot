@@ -1,4 +1,6 @@
 const { Command } = require('discord.js-commando')
+const path = require('path')
+const os = require('os')
 const fs = require('fs')
 
 module.exports = class SetInviteCommand extends Command {
@@ -22,7 +24,7 @@ module.exports = class SetInviteCommand extends Command {
     })
   }
   hasPermission (msg) {
-    const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
+    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/botconfigs/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
     for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
     return this.client.isOwner(msg.author)
   }
