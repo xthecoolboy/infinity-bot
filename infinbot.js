@@ -5,7 +5,7 @@ const { stripIndents } = require('common-tags')
 const path = require('path')
 const os = require('os')
 const sqlite = require('sqlite')
-const config = require(path.join(os.homedir(), '/botconfigs/conf.json'))
+const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 const packageInfo = require('./package.json')
 const client = new Commando.Client({
   owner: config.ownerID,
@@ -33,7 +33,7 @@ client.on('ready', () => {
     }
   })
 
-sqlite.open(path.join(os.homedir(), '/botconfigs/settings.sqlite3')).then((db) => {
+sqlite.open(path.join(os.homedir(), '/.config/infinity-bot/settings.sqlite3')).then((db) => {
   client.setProvider(new Commando.SQLiteProvider(db))
 })
 

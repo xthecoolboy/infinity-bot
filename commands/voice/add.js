@@ -7,7 +7,7 @@ const Song = require('../../struct/Song.js')
 const {stripIndents} = require('common-tags')
 const fs = require('fs')
 
-const config = require(path.join(os.homedir(), '/botconfigs/conf.json'))
+const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 
 module.exports = class AddQueueCommand extends Command {
   constructor (client) {
@@ -37,7 +37,7 @@ module.exports = class AddQueueCommand extends Command {
   }
 
   userLevel (msg) {
-    var userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/botconfigs/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
+    var userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
     for (var i in userList) if (userList[i].id === msg.author.id) return userList[i].level
   }
 
