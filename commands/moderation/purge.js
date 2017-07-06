@@ -22,7 +22,7 @@ module.exports = class PurgeMessageCommand extends Command {
   }
   hasPermission (msg) {
     const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
-    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level >= 2) return true
+    for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level >= 2) return true
     return this.client.isOwner(msg.author)
   }
   run (msg, args) {

@@ -22,7 +22,7 @@ module.exports = class WhoIsCommand extends Command {
   getToken (msg, member) {
     const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
     for (var i in userList) {
-      if (userList[i].name === member.user.tag && userList[i].token) {
+      if (userList[i].id === member.user.id && userList[i].token) {
         return userList[i].token
       } else if (!userList[i].token) {
         return '(none)'

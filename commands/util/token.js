@@ -14,7 +14,7 @@ module.exports = class TokenCommand extends Command {
   }
   hasPermission (msg) {
     const userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) console.error(err) }))
-    for (var i in userList) if (userList[i].name === msg.author.tag && userList[i].level >= 1) return true
+    for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level >= 1) return true
     return this.client.isOwner(msg.author)
   }
   async run (msg) {
@@ -24,10 +24,15 @@ module.exports = class TokenCommand extends Command {
       if (err) console.error(err)
       userList = JSON.parse(data)
       for (var i in userList) {
-        if (userList[i].name === msg.member.user.tag && userList[i].token) {
+        if (userList[i].id === msg.member.id && userList[i].token) {
+          if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
+          fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
+            if (err) console.err('[ERROR] ' + err)
+          })
           dmChannel.send(`${msg.member.user}, your unique token is \`${userList[i].token}\`. Don't share this with anyone!`)
           return null
         } else if (!userList[i].token) {
+          if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
           userList[i].token = randomstr.generate(12)
           fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
             if (err) console.err('[ERROR] ' + err)
@@ -36,7 +41,7 @@ module.exports = class TokenCommand extends Command {
           return null
         }
       }
-      const userInfo = {name: msg.member.user.tag, token: randomstr.generate(12)}
+      const userInfo = {id: msg.member.id, name: msg.member.user.tag, token: randomstr.generate(12)}
       userList.push(userInfo)
       fs.writeFile('./users.json', JSON.stringify(userList), (err) => {
         if (err) console.err('[ERROR] ' + err)

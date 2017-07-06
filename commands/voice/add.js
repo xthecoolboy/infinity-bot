@@ -36,7 +36,7 @@ module.exports = class AddQueueCommand extends Command {
 
   userLevel (msg) {
     var userList = JSON.parse(fs.readFileSync('./users.json', 'utf8', (err, data) => { if (err) return console.error(err) }))
-    for (var i in userList) if (userList[i].name === msg.author.tag) return userList[i].level
+    for (var i in userList) if (userList[i].id === msg.author.id) return userList[i].level
   }
 
   async run (msg, args) {
