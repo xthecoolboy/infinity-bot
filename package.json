@@ -1,15 +1,21 @@
 {
   "name": "infinity-bot",
-  "version": "1.2.5-3",
-  "description": "Bot for Airstrike-Infinity's Discord Server using the Discord.js framework",
+  "version": "1.2.3",
+  "description": "Bot used for Airstrike-Infinity's Discord Server",
   "main": "init.js",
-  "homepage": "eodc.github.io",
-  "bugs": "https://github.com/eodc/infinity-bot/issues",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eodc/infinity-bot.git"
+  },
   "author": "Nicholas Nhien",
   "license": "GPL-3.0",
-  "scripts": {
-    "start": "node init.js"
+  "bugs": {
+    "url": "https://github.com/eodc/infinity-bot/issues"
   },
+  "homepage": "https://github.com/eodc/infinity-bot#readme",
   "dependencies": {
     "discord.js": ">=11.1.0",
     "discord.js-commando": ">=0.9.0",
