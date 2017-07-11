@@ -3,19 +3,19 @@ const os = require('os')
 const fs = require('fs')
 const path = require('path')
 
-module.exports = class SetRestrictCommand extends Command {
+module.exports = class SetModRoleCommand extends Command {
   constructor (client) {
     super(client, {
-      name: 'setrestrict',
+      name: 'setmodrole',
       group: 'util',
-      memberName: 'setrestrict',
-      description: 'Sets a certain role as the restricted role',
+      memberName: 'setmodrole',
+      description: 'Sets a certain role as the Mod role',
       guildOnly: true,
       args: [
         {
           key: 'role',
           default: '',
-          prompt: 'Enter the role you would like to set as the restricted role.',
+          prompt: 'Enter the role you would like to set as the Mod role.',
           type: 'role'
         }
       ]
@@ -28,13 +28,13 @@ module.exports = class SetRestrictCommand extends Command {
   }
   run (msg, args) {
     if (!args.role) {
-      const currentRoleID = this.client.provider.get(msg.guild.id, 'restrictroleid')
+      const currentRoleID = this.client.provider.get(msg.guild.id, 'modroleid')
       const currentRole = msg.guild.roles.get(currentRoleID)
-      if (!currentRoleID) return msg.reply(`there is no restricted role currently set.`)
-      return msg.reply(`the current restricted role is ${currentRole}`)
+      if (!currentRoleID) return msg.reply(`there is no Mod role currently set.`)
+      return msg.reply(`the current Mod role is ${currentRole}`)
     }
-    this.client.provider.set(msg.guild.id, 'restrictroleid', args.role.id)
-    msg.reply(`${args.role} has been set as the restricted role.`)
-    return console.log(`[INFO] ${args.role.name} has been set as restricted role by ${msg.author.tag}`)
+    this.client.provider.set(msg.guild.id, 'modroleid', args.role.id)
+    msg.reply(`${args.role} has been set as the Mod role.`)
+    return console.log(`[INFO] ${args.role.name} has been set as Mod role by ${msg.author.tag}`)
   }
 }
