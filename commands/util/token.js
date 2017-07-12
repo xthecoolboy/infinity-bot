@@ -25,21 +25,23 @@ module.exports = class TokenCommand extends Command {
       if (err) console.error(err)
       var userList = JSON.parse(data)
       for (var i in userList) {
-        if (userList[i].id === msg.member.id && userList[i].token) {
-          if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
-          fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-            if (err) console.err('[ERROR] ' + err)
-          })
-          dmChannel.send(`${msg.member.user}, your unique token is \`${userList[i].token}\`. Don't share this with anyone!`)
-          return null
-        } else if (!userList[i].token) {
-          if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
-          userList[i].token = randomstr.generate(12)
-          fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-            if (err) console.err('[ERROR] ' + err)
-          })
-          dmChannel.send(`${msg.member.user}, your unique token is \`${userList[i].token}\`. Don't share this with anyone!`)
-          return null
+        if (userList[i].id === msg.member.id) {
+          if (userList[i].token) {
+            if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
+            fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
+              if (err) console.err('[ERROR] ' + err)
+            })
+            dmChannel.send(`${msg.member.user}, your unique token is \`${userList[i].token}\`. Don't share this with anyone!`)
+            return null
+          } else {
+            if (userList[i].name !== msg.member.user.tag) userList[i].name = msg.member.user.tag
+            userList[i].token = randomstr.generate(12)
+            fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
+              if (err) console.err('[ERROR] ' + err)
+            })
+            dmChannel.send(`${msg.member.user}, your unique token is \`${userList[i].token}\`. Don't share this with anyone!`)
+            return null
+          }
         }
       }
       const userInfo = {id: msg.member.id, name: msg.member.user.tag, token: randomstr.generate(12)}
