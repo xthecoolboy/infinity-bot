@@ -25,23 +25,30 @@ module.exports = class ValidateTokenCommand extends Command {
     for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
     return this.client.isOwner(msg.author)
   }
-  run (msg, args) {
+  async run (msg, args) {
     const adminChannelID = this.client.provider.get(msg.guild.id, 'adminChannel')
     if (msg.channel.id !== adminChannelID) {
       return msg.reply(`you must be in ${msg.guild.channels.get(adminChannelID)} to use this command!`)
     }
     var tokenArray = args.token.split(' ')
     const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
-    var validTokens = []
+    var tokenResults = []
+    const statusMsg = await msg.channel.send('Working...')
     for (var i in tokenArray) {
       for (var g in userList) {
         if (tokenArray[i] === userList[g].token) {
-          validTokens.push(`\`${tokenArray[i]}\`: \`valid\``)
+          tokenResults.push(`\`${tokenArray[i]}\`: \`valid\``)
           break
+        } else if (parseInt(g) === userList.length - 1) {
+          tokenResults.push(`\`${tokenArray[i]}\`: \`invalid\``)
         }
-        validTokens.push(`\`${tokenArray[i]}\`: \`invalid\``)
       }
     }
-    msg.channel.send(validTokens.join('\n'))
+    statusMsg.edit({embed: {
+      title: 'Results:',
+      color: 3426654,
+      description: tokenResults.join('\n')
+    }
+    })
   }
 }
