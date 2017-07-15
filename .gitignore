@@ -1,5 +1,5 @@
 conf.json
 *.sqlite3
 .DS_Store
-./commands/util/log.js
+./commands/misc/log.js
 users.json

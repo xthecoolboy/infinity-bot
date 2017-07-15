@@ -34,7 +34,7 @@ module.exports = class WhoIsCommand extends Command {
   getLevel (msg, member) {
     const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
     for (var i in userList) {
-      if (userList[i].id === member.user.id && userList[i].level) {
+      if (userList[i].id === member.user.id && userList[i].level || userList[i].level === 0) {
         return userList[i].level
       } else if (!userList[i].level) {
         return '(none)'

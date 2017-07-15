@@ -34,11 +34,14 @@ client.on('ready', () => {
     }
   })
   .on('guildMemberUpdate', (oldMemb, newMemb) => {
+    function writeUsers (userList) {
+      fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+    }
     if (oldMemb.roles.size !== newMemb.roles.size) {
       const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
       if (newMemb.roles.size === 1) {
         for (var l in userList) if (userList[l].id === newMemb.id) userList[l].level = 0
-        fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+        writeUsers(userList)
       }
       const restrictRoleID = client.provider.get(newMemb.guild.id, 'restrictroleid')
       const memberRoleID = client.provider.get(newMemb.guild.id, 'memberroleid')
@@ -52,19 +55,19 @@ client.on('ready', () => {
           switch (key) {
             case restrictRoleID:
               for (var g in userList) if (userList[g].id === newMemb.id) userList[g].level = -1
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+              writeUsers(userList)
               break
             case memberRoleID:
               for (var h in userList) if (userList[h].id === newMemb.id) userList[h].level = 1
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+              writeUsers(userList)
               break
             case modRoleID:
               for (var j in userList) if (userList[j].id === newMemb.id) userList[j].level = 2
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+              writeUsers(userList)
               break
             case adminRoleID:
               for (var k in userList) if (userList[k].id === newMemb.id) userList[k].level = 3
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+              writeUsers(userList)
               break
           }
         }
