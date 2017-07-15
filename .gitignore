@@ -1,3 +1,2 @@
-*.sqlite3
 .DS_Store
-./commands/misc/log.js
+commands/misc/log.js
