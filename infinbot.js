@@ -4,6 +4,7 @@ const Commando = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
 const path = require('path')
 const os = require('os')
+const fs = require('fs')
 const sqlite = require('sqlite')
 const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 const packageInfo = require('./package.json')
@@ -30,6 +31,47 @@ client.on('ready', () => {
     if (oldMemb.id === client.user.id && newMemb.voiceChannel) {
       const queue = client.registry.resolveCommand('voice:add').queue.get(oldMemb.guild.id)
       queue.voiceChannel = newMemb.voiceChannel
+    }
+  })
+  .on('guildMemberUpdate', (oldMemb, newMemb) => {
+    function writeUsers (userList) {
+      fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
+    }
+    if (oldMemb.roles.size !== newMemb.roles.size) {
+      const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
+      if (newMemb.roles.size === 1) {
+        for (var l in userList) if (userList[l].id === newMemb.id) userList[l].level = 0
+        writeUsers(userList)
+      }
+      const restrictRoleID = client.provider.get(newMemb.guild.id, 'restrictroleid')
+      const memberRoleID = client.provider.get(newMemb.guild.id, 'memberroleid')
+      const modRoleID = client.provider.get(newMemb.guild.id, 'modroleid')
+      const adminRoleID = client.provider.get(newMemb.guild.id, 'adminroleid')
+      for (var [key, value] of newMemb.roles) {
+        if (value.name === '@everyone') {
+          continue
+        }
+        if (!oldMemb.roles.get(key)) {
+          switch (key) {
+            case restrictRoleID:
+              for (var g in userList) if (userList[g].id === newMemb.id) userList[g].level = -1
+              writeUsers(userList)
+              break
+            case memberRoleID:
+              for (var h in userList) if (userList[h].id === newMemb.id) userList[h].level = 1
+              writeUsers(userList)
+              break
+            case modRoleID:
+              for (var j in userList) if (userList[j].id === newMemb.id) userList[j].level = 2
+              writeUsers(userList)
+              break
+            case adminRoleID:
+              for (var k in userList) if (userList[k].id === newMemb.id) userList[k].level = 3
+              writeUsers(userList)
+              break
+          }
+        }
+      }
     }
   })
 
