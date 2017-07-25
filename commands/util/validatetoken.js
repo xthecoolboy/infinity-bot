@@ -9,7 +9,7 @@ module.exports = class ValidateTokenCommand extends Command {
       name: 'validatetoken',
       group: 'util',
       memberName: 'validatetoken',
-      aliases: ['valtok', 'validtok'],
+      aliases: ['valtok', 'validtok', 'validtoken'],
       description: 'Crossreferences vote tokens with users file to check if token is valid.',
       args: [
         {
@@ -30,7 +30,7 @@ module.exports = class ValidateTokenCommand extends Command {
     if (msg.channel.id !== adminChannelID) {
       return msg.reply(`you must be in ${msg.guild.channels.get(adminChannelID)} to use this command!`)
     }
-    var tokenArray = args.token.split(' ')
+    var tokenArray = args.token.split('\n')
     const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
     var tokenResults = []
     const statusMsg = await msg.channel.send('Working...')

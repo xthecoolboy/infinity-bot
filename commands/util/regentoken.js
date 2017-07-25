@@ -10,6 +10,10 @@ module.exports = class RegenTokensCommand extends Command {
       name: 'regentoken',
       group: 'util',
       memberName: 'regentoken',
+      throttling: {
+        usages: 1,
+        duration: 86400
+      },
       description: 'Regenerates the user\'s token, if they think it has been compromised.',
       guildOnly: true
     })
