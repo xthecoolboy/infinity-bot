@@ -27,6 +27,12 @@ client.on('ready', () => {
 
       Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
   })
+  // ;)
+  .on('message', msg => {
+    if (Math.floor(Math.random() * 1000) + 1 === 539 && msg.author.id !== client.user.id) {
+      msg.reply('you sure about that?')
+    }
+  })
   .on('voiceStateUpdate', (oldMemb, newMemb) => {
     if (oldMemb.id === client.user.id && newMemb.voiceChannel) {
       const queue = client.registry.resolveCommand('voice:add').queue.get(oldMemb.guild.id)
