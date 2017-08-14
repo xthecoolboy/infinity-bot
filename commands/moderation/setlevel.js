@@ -57,6 +57,11 @@ module.exports = class SetLevelCommand extends Command {
       } else {
         for (var g in roleUserArray) {
           var user = await userProvider.getUser(roleUserArray[g].user.id)
+          if (!user) {
+            userProvider.addUser(roleUserArray[g].user.id, roleUserArray[g].user.tag)
+            userProvider.setLevel(roleUserArray[g].user.id, level)
+            continue
+          }
           if (user.name !== roleUserArray[g].user.tag) userProvider.setName(roleUserArray[g].user.id, roleUserArray[g].user.tag)
           userProvider.setLevel(roleUserArray[g].user.id, level)
         }
