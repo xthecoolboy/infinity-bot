@@ -9,7 +9,7 @@ module.exports = class SQLizer {
   async addUser (id, name) {
     await this.db.run(`INSERT INTO users (userid, name)
     VALUES ($id, $name)`, {
-      $id: id,
+      $id: JSON.stringify(id),
       $name: name
     })
   }
@@ -18,7 +18,7 @@ module.exports = class SQLizer {
       SET token = $token
       WHERE userid = $id`, {
         $token: token,
-        $id: id
+        $id: JSON.stringify(id)
       })
   }
   async setLevel (id, level) {
@@ -26,7 +26,7 @@ module.exports = class SQLizer {
       SET commandlevel = $level
       WHERE userid = $id`, {
         $level: level,
-        $id: id
+        $id: JSON.stringify(id)
       })
   }
   async setName (id, name) {
@@ -34,14 +34,14 @@ module.exports = class SQLizer {
       SET name = $name
       WHERE userid = $id`, {
         $name: name,
-        $id: id
+        $id: JSON.stringify(id)
       })
   }
   async getUser (id) {
     return await this.db.get(`SELECT *
       FROM users
       WHERE userid = $id`, {
-        $id: id
+        $id: JSON.stringify(id)
       })
   }
   async getAllUsers () {
@@ -52,7 +52,7 @@ module.exports = class SQLizer {
     const tokenObj = await this.db.get(`SELECT token
       FROM users
       WHERE userid = $id`, {
-        $id: id
+        $id: JSON.stringify(id)
       })
     if (!tokenObj) return undefined
     return tokenObj.token
@@ -61,7 +61,7 @@ module.exports = class SQLizer {
     const levelObj = await this.db.get(`SELECT commandlevel
       FROM users
       WHERE userid = $id`, {
-        $id: id
+        $id: JSON.stringify(id)
       })
     if (!levelObj) return undefined
     return levelObj.commandlevel

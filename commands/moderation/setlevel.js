@@ -37,15 +37,12 @@ module.exports = class SetLevelCommand extends Command {
     const userProvider = this.client.userProvider
     const level = args.level
     var userList = await userProvider.getAllUsers()
-    function findUser (user) {
-      return user.userid === JSON.stringify(roleUserArray[h].user.id)
-    }
     if (memberole.user) {
       for (var i in userList) {
         if (userList[i].userid === memberole.user.id) {
           if (typeof level === 'number') {
             if (userList[i].name !== memberole.user.tag) userProvider.setName(memberole.user.id, memberole.user.tag)
-            userProvider.setLevel(memberole.user.tag, level)
+            userProvider.setLevel(memberole.user.id, level)
             return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
           }
         }
@@ -58,22 +55,13 @@ module.exports = class SetLevelCommand extends Command {
       if (typeof level === 'string') {
         return msg.reply(`you must specify a level when assigning a role a level.`)
       } else {
-        for (var g in userList) {
-          for (var h in roleUserArray) {
-            if (userList[g].userid === JSON.stringify(roleUserArray[h].user.id)) {
-              if (userList[g].name !== roleUserArray[h].user.tag) userProvider.setName(userList[g].userid, roleUserArray[h].user.tag)
-              userProvider.setLevel(JSON.stringify(roleUserArray[h].user.id), level)
-            }
-          }
-        }
-        for (var j in roleUserArray) {
-          if (!userList.find(findUser)) {
-            userProvider.addUser(JSON.stringify(roleUserArray[j].id), roleUserArray[j].name)
-            userProvider.setLevel(JSON.stringify(roleUserArray[j].id), level)
-          }
+        for (var g in roleUserArray) {
+          var user = await userProvider.getUser(roleUserArray[g].user.id)
+          if (user.name !== roleUserArray[g].user.tag) userProvider.setName(roleUserArray[g].user.id, roleUserArray[g].user.tag)
+          userProvider.setLevel(roleUserArray[g].user.id, level)
         }
       }
-      return msg.reply(`members in ${memberole} have had their levels set to \`${level}\``)
     }
+    return msg.reply(`members in ${memberole} have had their levels set to \`${level}\``)
   }
 }
