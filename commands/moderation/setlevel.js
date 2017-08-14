@@ -1,7 +1,4 @@
 const { Command } = require('discord.js-commando')
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
 
 module.exports = class SetLevelCommand extends Command {
   constructor (client) {
@@ -29,69 +26,51 @@ module.exports = class SetLevelCommand extends Command {
       ]
     })
   }
-  hasPermission (msg) {
-    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
-    for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
-    return this.client.isOwner(msg.author)
+
+  async hasPermission (msg) {
+    var userLevel = await this.client.userProvider.getLevel(msg.author.id)
+    return userLevel === 3 || this.client.isOwner(msg.author)
   }
-  run (msg, args) {
+
+  async run (msg, args) {
     const memberole = args.memberole
+    const userProvider = this.client.userProvider
     const level = args.level
-    var userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(`[ERROR] ` + err) }))
+    var userList = await userProvider.getAllUsers()
     function findUser (user) {
       return user.id === roleUserArray[h].user.id
     }
     if (memberole.user) {
       for (var i in userList) {
-        if (userList[i].id === memberole.user.id) {
-          if (typeof level === 'string') {
-            if (userList[i].level || userList[i].level === 0) {
-              if (userList[i].name !== memberole.user.tag) userList[i].name = memberole.user.tag
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-                if (err) console.err('[ERROR] ' + err)
-              })
-              return msg.reply(`${memberole === msg.member ? 'your' : memberole + `'s`} current command level is \`${userList[i].level}\``)
-            } else if (userList[i].level === undefined) return msg.reply(`there is no level currently set for ${memberole === msg.member ? 'you' : memberole}`)
-          } else if (typeof level === 'number') {
-            if (userList[i].name !== memberole.user.tag) userList[i].name = memberole.user.tag
-            userList[i].level = level
-            fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-              if (err) console.err('[ERROR] ' + err)
-            })
+        if (userList[i].userid === memberole.user.id) {
+          if (typeof level === 'number') {
+            if (userList[i].name !== memberole.user.tag) userProvider.setName(memberole.user.id, memberole.user.tag)
+            userProvider.setLevel(memberole.user.tag, level)
             return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
           }
         }
       }
-      const userInfo = {id: memberole.user.id, name: memberole.user.tag, level: level}
-      userList.push(userInfo)
-      fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-        if (err) console.err('[ERROR] ' + err)
-      })
+      userProvider.addUser(memberole.user.id, memberole.user.tag)
+      userProvider.setLevel(memberole.user.id, level)
       return msg.reply(`${memberole === msg.member ? 'your' : memberole} level has been set to \`${level}\``)
     } else {
       var roleUserArray = memberole.members.array()
       for (var g in userList) {
         for (var h in roleUserArray) {
-          if (userList[g].id === roleUserArray[h].user.id) {
+          if (userList[g].userid === roleUserArray[h].user.id) {
             if (typeof level === 'string') {
               return msg.reply(`you must specify a level when assigning a role a level.`)
             } else {
-              if (userList[g].name !== roleUserArray[h].user.tag) userList[g].name = roleUserArray[g].user.tag
-              userList[g].level = level
-              fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-                if (err) console.err('[ERROR] ' + err)
-              })
+              if (userList[g].name !== roleUserArray[h].user.tag) userProvider.setName(userList[g].userid, roleUserArray[h].user.tag)
+              userProvider.setLevel(userList[g].userid, level)
             }
           }
         }
       }
       for (var j in roleUserArray) {
         if (!userList.find(findUser)) {
-          const userInfo = {id: roleUserArray[j].user.id, name: roleUserArray[j].user.tag, level: level}
-          userList.push(userInfo)
-          fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), (err) => {
-            if (err) console.err('[ERROR] ' + err)
-          })
+          userProvider.addUser(roleUserArray[j].id, roleUserArray[j].name)
+          userProvider.setLevel(roleUserArray[j].id, level)
         }
       }
       return msg.reply(`members in ${memberole} have had their levels set to \`${level}\``)

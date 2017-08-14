@@ -5,7 +5,6 @@ const os = require('os')
 const path = require('path')
 const Song = require('../../struct/Song.js')
 const {stripIndents} = require('common-tags')
-const fs = require('fs')
 
 const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 
@@ -36,9 +35,8 @@ module.exports = class AddQueueCommand extends Command {
     this.youtube = new YouTube(config.googleAPIKey)
   }
 
-  userLevel (msg) {
-    var userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
-    for (var i in userList) if (userList[i].id === msg.author.id) return userList[i].level
+  async userLevel (msg) {
+    return await this.client.userProvider.getLevel(msg.author.id)
   }
 
   async run (msg, args) {

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 const Commando = require('discord.js-commando')
+const SQLizer = require('./struct/SQLizer.js')
 const { stripIndents } = require('common-tags')
 const path = require('path')
 const os = require('os')
-const fs = require('fs')
 const sqlite = require('sqlite')
 const config = require(path.join(os.homedir(), '/.config/infinity-bot/conf.json'))
 const packageInfo = require('./package.json')
@@ -19,13 +19,11 @@ client.on('ready', () => {
   client.user.setGame('with Schrodinger\'s cat')
 })
   .on('unknownCommand', msg => {
-    var prefix = client.provider.get(msg.guild.id, 'prefix')
-    var unknownCmd = msg.content.slice(prefix.length).split(' ')
-    console.log(`[WARN] ${msg.author.tag} has passed unknown command: ${unknownCmd[0]}`)
+    console.log(`[WARN] ${msg.author.tag} has passed unknown command: ${msg.guild ? msg.content.slice(client.provider.get(msg.guild.id, 'prefix').length).split(' ') : msg.content}`)
     msg.channel.send({embed: { color: 15158332,
-      description: stripIndents`**__Unknown command:__ \`${unknownCmd[0]}\`**
+      description: stripIndents`**__Unknown command:__ \`${msg.guild ? msg.content.slice(client.provider.get(msg.guild.id, 'prefix').length).split(' ') : msg.content}\`**
 
-      Message \`${prefix}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
+      Message \`${msg.guild ? client.provider.get(msg.guild.id, 'prefix') : ''}help\` or \`@${client.user.tag} help\` to get a list of all available commands.`}})
   })
   // ;)
   .on('message', msg => {
@@ -40,14 +38,9 @@ client.on('ready', () => {
     }
   })
   .on('guildMemberUpdate', (oldMemb, newMemb) => {
-    function writeUsers (userList) {
-      fs.writeFile(path.join(os.homedir(), '/.config/infinity-bot/users.json'), JSON.stringify(userList), 'utf8', (err) => { if (err) console.error(err) })
-    }
     if (oldMemb.roles.size !== newMemb.roles.size) {
-      const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
       if (newMemb.roles.size === 1) {
-        for (var l in userList) if (userList[l].id === newMemb.id) userList[l].level = 0
-        writeUsers(userList)
+        client.userProvider.setLevel(newMemb.id, 0)
       }
       const restrictRoleID = client.provider.get(newMemb.guild.id, 'restrictroleid')
       const memberRoleID = client.provider.get(newMemb.guild.id, 'memberroleid')
@@ -60,20 +53,16 @@ client.on('ready', () => {
         if (!oldMemb.roles.get(key)) {
           switch (key) {
             case restrictRoleID:
-              for (var g in userList) if (userList[g].id === newMemb.id) userList[g].level = -1
-              writeUsers(userList)
+              client.userProvider.setLevel(newMemb.id, -1)
               break
             case memberRoleID:
-              for (var h in userList) if (userList[h].id === newMemb.id) userList[h].level = 1
-              writeUsers(userList)
+              client.userProvider.setLevel(newMemb.id, 1)
               break
             case modRoleID:
-              for (var j in userList) if (userList[j].id === newMemb.id) userList[j].level = 2
-              writeUsers(userList)
+              client.userProvider.setLevel(newMemb.id, 2)
               break
             case adminRoleID:
-              for (var k in userList) if (userList[k].id === newMemb.id) userList[k].level = 3
-              writeUsers(userList)
+              client.userProvider.setLevel(newMemb.id, 3)
               break
           }
         }
@@ -83,6 +72,10 @@ client.on('ready', () => {
 
 sqlite.open(path.join(os.homedir(), '/.config/infinity-bot/settings.sqlite3')).then((db) => {
   client.setProvider(new Commando.SQLiteProvider(db))
+})
+sqlite.open(path.join(os.homedir(), '/.config/infinity-bot/users.sqlite3')).then((db) => {
+  client.userProvider = new SQLizer(db)
+  client.userProvider.init()
 })
 
 client.registry

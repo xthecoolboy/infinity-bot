@@ -1,7 +1,4 @@
 const { Command } = require('discord.js-commando')
-const os = require('os')
-const fs = require('fs')
-const path = require('path')
 
 module.exports = class SetAdminRoleCommand extends Command {
   constructor (client) {
@@ -21,11 +18,12 @@ module.exports = class SetAdminRoleCommand extends Command {
       ]
     })
   }
-  hasPermission (msg) {
-    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
-    for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
-    return this.client.isOwner(msg.author)
+
+  async hasPermission (msg) {
+    var userLevel = await this.client.userProvider.getLevel(msg.author.id)
+    return userLevel >= 3 || this.client.isOwner(msg.author)
   }
+
   run (msg, args) {
     if (!args.role) {
       const currentRoleID = this.client.provider.get(msg.guild.id, 'adminroleid')

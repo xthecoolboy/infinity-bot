@@ -1,8 +1,5 @@
 const { Command } = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
 
 module.exports = class WhoIsCommand extends Command {
   constructor (client) {
@@ -21,30 +18,12 @@ module.exports = class WhoIsCommand extends Command {
       ]
     })
   }
-  getToken (msg, member) {
-    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
-    for (var i in userList) {
-      if (userList[i].id === member.user.id && userList[i].token) {
-        return userList[i].token
-      } else if (!userList[i].token) {
-        return '(none)'
-      }
-    }
-  }
-  getLevel (msg, member) {
-    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) return console.error(err) }))
-    for (var i in userList) {
-      if (userList[i].id === member.user.id && userList[i].level || userList[i].level === 0) {
-        return userList[i].level
-      } else if (!userList[i].level) {
-        return '(none)'
-      }
-    }
-  }
-  run (msg, args) {
+
+  async run (msg, args) {
     const member = args.user
     const adminChannelID = this.client.provider.get(msg.guild.id, 'adminChannel')
-    return msg.channel.send({embed: {
+    const response = await msg.channel.send('Working... one moment.')
+    return response.edit({embed: {
       color: 3447003,
       description: `${member.user.username === member.displayName ? member.user.tag : member.user.tag + ` (${member.displayName})`}`,
       fields: [
@@ -62,8 +41,8 @@ module.exports = class WhoIsCommand extends Command {
           value: stripIndents`
           ‣ Role(s): ${member.roles.map(roles => `\`${roles.name}\``).join(', ')}
           ‣ Joined on:  \`${member.joinedAt}\`${member.nickname ? `\n‣ Nickname: \`${member.nickname}\`` : ''}
-          ‣ Command Level: \`${this.getLevel(msg, member)}\`
-          ${msg.channel.id === adminChannelID ? `‣ Token: \`${this.getToken(msg, member)}\`` : ''}
+          ‣ Command Level: \`${await this.client.userProvider.getLevel(member.id)}\`
+          ${msg.channel.id === adminChannelID ? `‣ Token: \`${await this.client.userProvider.getToken(member.id)}\`` : ''}
           `
         }
       ]

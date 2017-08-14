@@ -1,9 +1,5 @@
 const { Command } = require('discord.js-commando')
 const { stripIndents } = require('common-tags')
-const path = require('path')
-const os = require('os')
-const fs = require('fs')
-
 module.exports = class DefaultVolumeCommand extends Command {
   constructor (client) {
     super(client, {
@@ -15,11 +11,12 @@ module.exports = class DefaultVolumeCommand extends Command {
       guildOnly: true
     })
   }
-  hasPermission (msg) {
-    const userList = JSON.parse(fs.readFileSync(path.join(os.homedir(), '/.config/infinity-bot/users.json'), 'utf8', (err, data) => { if (err) console.error(err) }))
-    for (var i in userList) if (userList[i].id === msg.author.id && userList[i].level === 3) return true
-    return this.client.isOwner(msg.author)
+
+  async hasPermission (msg) {
+    var userLevel = await this.client.userProvider.getLevel(msg.author.id)
+    return userLevel === 3 || this.client.isOwner(msg.author)
   }
+
   run (msg, args) {
     if (!args) {
       const defaultVolume = this.client.provider.get(msg.guild.id, 'defaultVol')
