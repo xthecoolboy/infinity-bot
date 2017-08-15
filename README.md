@@ -4,3 +4,31 @@
 [![Discord](https://img.shields.io/discord/297931537008295941.svg?style=flat-square)](https://discord.gg/mvg97G3)
 
 Bot used for Airstrike-Infinity's Discord server. Written in JS.
+
+# Installation
+(Requires current version of node.js, not LTS version.)
+
+`npm install infinity-bot`
+
+Wherever the module is installed (should be at `~/node_modules`), modify the file `discord.js-commando/src/commands/message.js` at line 134, replacing `if(!this.command.hasPermission(this)) {` with `if(!(await this.command.hasPermission(this))) {`
+
+# Initial Configuration
+
+1. Create a bot account and token. Instructions may be found [here](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
+
+2. Get your own user id by following the instructions [here](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
+
+3. Get a YouTube API key by following the instructions [here](https://developers.google.com/youtube/v3/getting-started)
+
+4. Create `~/.config/infinity-bot/conf.json`
+
+5. Copy this format in the config file:
+```json
+{
+  "token": "<Your bot token>",
+  "ownerID": "<Your UserID>",
+  "googleAPIKey": "<Your YouTube API Key>"
+}
+```
+6. While in `~`, run `./node_modules/.bin/infinity-bot`
+7. Use the `help` command and test out the numerous utility and moderation commands.
