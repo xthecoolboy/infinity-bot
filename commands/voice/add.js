@@ -233,10 +233,23 @@ module.exports = class AddQueueCommand extends Command {
     }
     queue.textChannel.send({embed: {
       color: 3447003,
-      title: `Now playing: __${song.title}__`,
-      description: stripIndents`**Requested By:** ${song.username}
-        Length: ${song.songLength}`,
-      image: {url: song.thumbnail}}
+      description: `**Now playing:** __[${song.title}](${song.url})__`,
+      fields: [{
+        name: `Requested By:`,
+        value: song.username,
+        inline: true
+      },
+      {
+        name: `Length:`,
+        value: song.songLength,
+        inline: true
+      }
+      ],
+      image: {url: song.thumbnail},
+      footer: {
+        icon_url: 'http://therealdanvega.com/wp-content/uploads/2016/02/YouTube-logo-play-icon-e1455109429590.png',
+        text: 'YouTube'
+      }}
     })
     let stream = ytdl(song.url, {audioonly: true})
 

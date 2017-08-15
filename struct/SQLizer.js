@@ -3,14 +3,15 @@ module.exports = class SQLizer {
     this.db = db
   }
   async init () {
-    await this.db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userid STRING, name STRING, commandlevel INTEGER, token STRING)')
+    await this.db.run('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, userid TEXT, name TEXT, commandlevel INTEGER, token TEXT)')
     console.log('[INFO] User Provider initialized')
   }
   async addUser (id, name) {
+    console.log(id + ' ' + typeof id)
     await this.db.run(`INSERT INTO users (userid, name)
     VALUES ($id, $name)`, {
-      $id: JSON.stringify(id),
-      $name: name
+      $name: name,
+      $id: typeof id === 'string' ? id : JSON.stringify(id)
     })
   }
   async setToken (id, token) {
@@ -18,7 +19,7 @@ module.exports = class SQLizer {
       SET token = $token
       WHERE userid = $id`, {
         $token: token,
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
   }
   async setLevel (id, level) {
@@ -26,7 +27,7 @@ module.exports = class SQLizer {
       SET commandlevel = $level
       WHERE userid = $id`, {
         $level: level,
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
   }
   async setName (id, name) {
@@ -34,14 +35,14 @@ module.exports = class SQLizer {
       SET name = $name
       WHERE userid = $id`, {
         $name: name,
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
   }
   async getUser (id) {
     return await this.db.get(`SELECT *
       FROM users
       WHERE userid = $id`, {
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
   }
   async getAllUsers () {
@@ -52,7 +53,7 @@ module.exports = class SQLizer {
     const tokenObj = await this.db.get(`SELECT token
       FROM users
       WHERE userid = $id`, {
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
     if (!tokenObj) return undefined
     return tokenObj.token
@@ -61,7 +62,7 @@ module.exports = class SQLizer {
     const levelObj = await this.db.get(`SELECT commandlevel
       FROM users
       WHERE userid = $id`, {
-        $id: JSON.stringify(id)
+        $id: typeof id === 'string' ? id : JSON.stringify(id)
       })
     if (!levelObj) return undefined
     return levelObj.commandlevel
