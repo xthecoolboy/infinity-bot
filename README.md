@@ -39,8 +39,9 @@ Did you set the default volume by using the `defaultvolume` command?
 
 
 # Licence
-## This project is licenced under GPL-3.0. For less legalese as to what you may or may not do with my code, click on the LICENCE file in the root directory of my repository
-```                    GNU GENERAL PUBLIC LICENSE
+#### This project is licenced under GPL-3.0. For less legalese as to what you may or may not do with my code, click on the LICENCE file in the root directory of my repository
+```                    
+                      GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
 
  Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
