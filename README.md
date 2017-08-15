@@ -12,7 +12,7 @@ Bot used for Airstrike-Infinity's Discord server. Written in JS.
 
 Wherever the module is installed (should be at `~/node_modules`), modify the file `discord.js-commando/src/commands/message.js` at line 134, replacing `if(!this.command.hasPermission(this)) {` with `if(!(await this.command.hasPermission(this))) {`
 
-# Initial Configuration
+## Initial Configuration
 
 1. Create a bot account and token. Instructions may be found [here](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token)
 
@@ -32,3 +32,7 @@ Wherever the module is installed (should be at `~/node_modules`), modify the fil
 ```
 6. While in `~`, run `./node_modules/.bin/infinity-bot`
 7. Use the `help` command and test out the numerous utility and moderation commands.
+
+## Troubleshooting
+### HELP! THERE'S NO SOUND WHEN PLAYING MUSIC YTF IS UR BOT SHIT?
+Did you set the default volume by using the `defaultvolume` command?
