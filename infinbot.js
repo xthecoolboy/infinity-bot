@@ -39,32 +39,40 @@ client.on('ready', () => {
   })
   .on('guildMemberUpdate', (oldMemb, newMemb) => {
     if (oldMemb.roles.size !== newMemb.roles.size) {
+      let restctID = client.provider.get(newMemb.guild.id, 'restrictroleid')
+      let membID = client.provider.get(newMemb.guild.id, 'memberroleid')
+      let modID = client.provider.get(newMemb.guild.id, 'modroleid')
+      let adminID = client.provider.get(newMemb.guild.id, 'adminroleid')
       if (newMemb.roles.size === 1) {
         client.userProvider.setLevel(newMemb.id, 0)
-      }
-      const restrictRoleID = client.provider.get(newMemb.guild.id, 'restrictroleid')
-      const memberRoleID = client.provider.get(newMemb.guild.id, 'memberroleid')
-      const modRoleID = client.provider.get(newMemb.guild.id, 'modroleid')
-      const adminRoleID = client.provider.get(newMemb.guild.id, 'adminroleid')
-      for (var [key, value] of newMemb.roles) {
-        if (value.name === '@everyone') {
-          continue
-        }
-        if (!oldMemb.roles.get(key)) {
-          switch (key) {
-            case restrictRoleID:
+      } else if (newMemb.roles.size === oldMemb.roles.size + 1) {
+        for (var [key, value] of newMemb.roles) {
+          if (value.name === '@everyone') {
+            continue
+          }
+          if (!oldMemb.roles.get(key)) {
+            if (key === restctID) {
               client.userProvider.setLevel(newMemb.id, -1)
               break
-            case memberRoleID:
+            } else if (key === membID && !(newMemb.roles.has(modID) || newMemb.roles.has(adminID))) {
               client.userProvider.setLevel(newMemb.id, 1)
               break
-            case modRoleID:
+            } else if (key === modID && !newMemb.roles.has(adminID)) {
               client.userProvider.setLevel(newMemb.id, 2)
               break
-            case adminRoleID:
+            } else if (key === adminID) {
               client.userProvider.setLevel(newMemb.id, 3)
               break
+            }
           }
+        }
+      } else if (newMemb.roles.size === oldMemb.roles.size - 1) {
+        if (newMemb.roles.get(adminID)) {
+          client.userProvider.setLevel(newMemb.id, 3)
+        } else if (newMemb.roles.get(modID)) {
+          client.userProvider.setLevel(newMemb.id, 2)
+        } else if (newMemb.roles.get(membID)) {
+          client.userProvider.setLevel(newMemb.id, 1)
         }
       }
     }
