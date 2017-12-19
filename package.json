@@ -25,6 +25,7 @@
     "sqlite": ">=2.6.0",
     "urban": ">=0.3.1",
     "ytdl-core": ">=0.13.2",
-    "randomstring": ">=1.1.5"
+    "randomstring": ">=1.1.5",
+    "request": ">=2.83.0"
   }
 }
