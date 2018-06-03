@@ -39,4 +39,18 @@ Did you set the default volume by using the `defaultvolume` command?
 
 
 # Licence
-#### This project is licenced under GPL-3.0. For less legalese as to what you may or may not do with my code, click on the LICENCE file in the root directory of my repository
+    Infinity Bot - Bot utilizing NodeJS & Discord API
+    Copyright (C) 2018  Nicholas Nhien
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
