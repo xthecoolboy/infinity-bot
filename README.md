@@ -34,7 +34,7 @@ Wherever the module is installed (should be at `~/node_modules`), modify the fil
 7. Use the `help` command and test out the numerous utility and moderation commands.
 
 ## Troubleshooting
-### HELP! THERE'S NO SOUND WHEN PLAYING MUSIC YTF IS UR BOT SHIT?
+### HELP! THERE'S NO SOUND WHEN PLAYING MUSIC
 Did you set the default volume by using the `defaultvolume` command?
 
 
